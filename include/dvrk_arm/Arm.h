@@ -6,6 +6,7 @@
 #include "tf/LinearMath/Matrix3x3.h"
 #include "boost/shared_ptr.hpp"
 #include "dvrk_arm/Frame.h"
+#include "tf/transform_broadcaster.h"
 
 struct Command: public Frame{
 public:
@@ -99,6 +100,8 @@ private:
     Command eeCmd;
     std::vector<FramePtr> frameptrVec;
     std::vector<FramePtr>::iterator frameIter;
+    tf::TransformBroadcaster frame_broadcaster;
+    int counter;
 
 };
 #endif

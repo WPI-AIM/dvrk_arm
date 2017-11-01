@@ -14,7 +14,7 @@ DVRK_Arm::DVRK_Arm(const std::string &arm_name): DVRK_Bridge(arm_name){
     poseConversion.assign_conversion_fcn(&DVRK_Arm::cisstPose_to_userTransform, this);
     jointConversion.assign_conversion_fcn(&DVRK_Arm::cisstJoint_to_userJoint, this);
     wrenchConversion.assign_conversion_fcn(&DVRK_Arm::cisstWrench_to_userWrench, this);
-
+    counter = 0;
 }
 
 void DVRK_Arm::init(){
@@ -355,6 +355,12 @@ void DVRK_Arm::handle_frames(){
         (*frameIter)->pos = (*frameIter)->trans.getOrigin();
         (*frameIter)->rot_quat = (*frameIter)->trans.getRotation();
         (*frameIter)->rot_mat.setRotation((*frameIter)->rot_quat);
+    }
+    counter++;
+    if (counter % 15 == 0){
+    frame_broadcaster.sendTransform(tf::StampedTransform(originFramePtr->trans, ros::Time::now(), "world", "arm_origin"));
+    frame_broadcaster.sendTransform(tf::StampedTransform(eeFramePtr->trans, ros::Time::now(), "arm_origin", "ee"));
+    counter = 0;
     }
 }
 
