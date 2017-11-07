@@ -159,45 +159,45 @@ void DVRK_Arm::affix_tip_frame(const tf::Transform &trans){
     afxdTipFramePtr->trans = trans;
 }
 
-void DVRK_Arm::get_cur_position(double &x, double &y, double &z){
+void DVRK_Arm::measured_cp_pos(double &x, double &y, double &z){
     x = eeFramePtr->trans.getOrigin().getX();
     y = eeFramePtr->trans.getOrigin().getY();
     z = eeFramePtr->trans.getOrigin().getZ();
 }
 
-void DVRK_Arm::get_cur_position(tf::Vector3 &pos){
+void DVRK_Arm::measured_cp_pos(tf::Vector3 &pos){
     pos = eeFramePtr->trans.getOrigin();
 }
 
-void DVRK_Arm::get_cur_position(geometry_msgs::Point &pos){
+void DVRK_Arm::measured_cp_pos(geometry_msgs::Point &pos){
     tf::pointTFToMsg(eeFramePtr->trans.getOrigin(), pos);
 }
 
-void DVRK_Arm::get_cur_orientation(double &roll, double &pitch, double &yaw){
+void DVRK_Arm::measured_cp_ori(double &roll, double &pitch, double &yaw){
     tf::Matrix3x3(eeFramePtr->trans.getRotation()).getRPY(roll, pitch, yaw);
 }
 
-void DVRK_Arm::get_cur_orientation(double &x, double &y, double &z, double &w){
+void DVRK_Arm::measured_cp_ori(double &x, double &y, double &z, double &w){
     x = eeFramePtr->trans.getRotation().getX();
     y = eeFramePtr->trans.getRotation().getY();
     z = eeFramePtr->trans.getRotation().getZ();
     w = eeFramePtr->trans.getRotation().getW();
 }
 
-void DVRK_Arm::get_cur_orientation(tf::Quaternion &tf_quat){
+void DVRK_Arm::measured_cp_ori(tf::Quaternion &tf_quat){
     tf_quat = eeFramePtr->trans.getRotation();
     tf_quat.normalize();
 }
 
-void DVRK_Arm::get_cur_orientation(geometry_msgs::Quaternion &gm_quat){
+void DVRK_Arm::measured_cp_ori(geometry_msgs::Quaternion &gm_quat){
     tf::quaternionTFToMsg(eeFramePtr->trans.getRotation(), gm_quat);
 }
 
-void DVRK_Arm::get_cur_orientation(tf::Matrix3x3 &mat){
+void DVRK_Arm::measured_cp_ori(tf::Matrix3x3 &mat){
     mat.setRotation(eeFramePtr->trans.getRotation());
 }
 
-void DVRK_Arm::get_cur_pose(geometry_msgs::Pose &pose){
+void DVRK_Arm::measured_cp(geometry_msgs::Pose &pose){
     pose.position.x = eeFramePtr->trans.getOrigin().getX();
     pose.position.y = eeFramePtr->trans.getOrigin().getY();
     pose.position.z = eeFramePtr->trans.getOrigin().getZ();
@@ -205,7 +205,7 @@ void DVRK_Arm::get_cur_pose(geometry_msgs::Pose &pose){
     tf::quaternionTFToMsg(eeFramePtr->trans.getRotation(), pose.orientation);
 }
 
-void DVRK_Arm::get_cur_transform(tf::Transform &trans){
+void DVRK_Arm::measured_cp(tf::Transform &trans){
     trans = eeFramePtr->trans;
     trans.setRotation(trans.getRotation().normalized());
 }

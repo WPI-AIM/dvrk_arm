@@ -68,18 +68,18 @@ public:
     bool move_cp(geometry_msgs::PoseStamped &pose);
     bool move_cp(tf::Transform &trans);
 
-    void get_cur_position(double &x, double &y, double &z);
-    void get_cur_position(tf::Vector3 &pos);
-    void get_cur_position(geometry_msgs::Point &pos);
+    void measured_cp_pos(double &x, double &y, double &z);
+    void measured_cp_pos(tf::Vector3 &pos);
+    void measured_cp_pos(geometry_msgs::Point &pos);
 
-    void get_cur_orientation(double &roll, double &pitch, double &yaw);
-    void get_cur_orientation(double &x, double &y, double &z, double &w);
-    void get_cur_orientation(tf::Quaternion &tf_quat);
-    void get_cur_orientation(geometry_msgs::Quaternion &gm_quat);
-    void get_cur_orientation(tf::Matrix3x3 &mat);
+    void measured_cp_ori(double &roll, double &pitch, double &yaw);
+    void measured_cp_ori(double &x, double &y, double &z, double &w);
+    void measured_cp_ori(tf::Quaternion &tf_quat);
+    void measured_cp_ori(geometry_msgs::Quaternion &gm_quat);
+    void measured_cp_ori(tf::Matrix3x3 &mat);
 
-    void get_cur_pose(geometry_msgs::Pose &pose);
-    void get_cur_transform(tf::Transform &trans);
+    void measured_cp(geometry_msgs::Pose &pose);
+    void measured_cp(tf::Transform &trans);
 
     void set_mode(const std::string &state, bool lock_wrench_ori = true);
 
