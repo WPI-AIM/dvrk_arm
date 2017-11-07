@@ -55,18 +55,18 @@ public:
     bool set_moment(const double &nx,const double &ny,const double &nz);
     bool set_wrench(const double &fx,const double &fy,const double &fz,const double &nx,const double &ny,const double &nz);
 
-    bool set_position(const double &x, const double &y, const double &z);
-    bool set_position(const geometry_msgs::Point &pos);
-    bool set_position(const tf::Vector3 &pos);
+    bool move_cp_pos(const double &x, const double &y, const double &z);
+    bool move_cp_pos(const geometry_msgs::Point &pos);
+    bool move_cp_pos(const tf::Vector3 &pos);
 
-    bool set_orientation(const double &roll, const double &pitch, const double &yaw);
-    bool set_orientation(const double &x, const double &y, const double &z, const double &w);
-    bool set_orientation(const tf::Quaternion &tf_quat);
-    bool set_orientation(const geometry_msgs::Quaternion &gm_quat);
-    bool set_orientation(const tf::Matrix3x3 &mat);
+    bool move_cp_ori(const double &roll, const double &pitch, const double &yaw);
+    bool move_cp_ori(const double &x, const double &y, const double &z, const double &w);
+    bool move_cp_ori(const tf::Quaternion &tf_quat);
+    bool move_cp_ori(const geometry_msgs::Quaternion &gm_quat);
+    bool move_cp_ori(const tf::Matrix3x3 &mat);
 
-    bool set_pose(geometry_msgs::PoseStamped &pose);
-    bool set_transform(tf::Transform &trans);
+    bool move_cp(geometry_msgs::PoseStamped &pose);
+    bool move_cp(tf::Transform &trans);
 
     void get_cur_position(double &x, double &y, double &z);
     void get_cur_position(tf::Vector3 &pos);

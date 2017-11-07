@@ -210,49 +210,49 @@ void DVRK_Arm::get_cur_transform(tf::Transform &trans){
     trans.setRotation(trans.getRotation().normalized());
 }
 
-bool DVRK_Arm::set_position(const double &x, const double &y, const double &z){
+bool DVRK_Arm::move_cp_pos(const double &x, const double &y, const double &z){
     eeCmd.trans.setOrigin(tf::Vector3(x,y,z));
     move_arm_cartesian(eeCmd.trans);
 }
 
-bool DVRK_Arm::set_position(const geometry_msgs::Point &pos){
+bool DVRK_Arm::move_cp_pos(const geometry_msgs::Point &pos){
     eeCmd.trans.setOrigin(tf::Vector3(pos.x, pos.y, pos.z));
     move_arm_cartesian(eeCmd.trans);
 }
 
-bool DVRK_Arm::set_position(const tf::Vector3 &pos){
+bool DVRK_Arm::move_cp_pos(const tf::Vector3 &pos){
     eeCmd.trans.setOrigin(pos);
     move_arm_cartesian(eeCmd.trans);
 }
 
-bool DVRK_Arm::set_orientation(const double &roll, const double &pitch, const double &yaw){
+bool DVRK_Arm::move_cp_ori(const double &roll, const double &pitch, const double &yaw){
     eeCmd.rot_quat.setRPY(roll, pitch, yaw);
     eeCmd.trans.setRotation(eeCmd.rot_quat);
     move_arm_cartesian(eeCmd.trans);
 }
 
-bool DVRK_Arm::set_orientation(const double &x, const double &y, const double &z, const double &w){
+bool DVRK_Arm::move_cp_ori(const double &x, const double &y, const double &z, const double &w){
     eeCmd.trans.setRotation(tf::Quaternion(x,y,z,w));
     move_arm_cartesian(eeCmd.trans);
 }
 
-bool DVRK_Arm::set_orientation(const tf::Quaternion &tf_quat){
+bool DVRK_Arm::move_cp_ori(const tf::Quaternion &tf_quat){
     eeCmd.trans.setRotation(tf_quat);
     move_arm_cartesian(eeCmd.trans);
 }
 
-bool DVRK_Arm::set_orientation(const geometry_msgs::Quaternion &gm_quat){
+bool DVRK_Arm::move_cp_ori(const geometry_msgs::Quaternion &gm_quat){
     eeCmd.trans.setRotation(tf::Quaternion(gm_quat.x, gm_quat.y, gm_quat.z, gm_quat.w));
     move_arm_cartesian(eeCmd.trans);
 }
 
-bool DVRK_Arm::set_orientation(const tf::Matrix3x3 &mat){
+bool DVRK_Arm::move_cp_ori(const tf::Matrix3x3 &mat){
     mat.getRotation(eeCmd.rot_quat);
     eeCmd.trans.setRotation(eeCmd.rot_quat);
     move_arm_cartesian(eeCmd.trans);
 }
 
-bool DVRK_Arm::set_pose(geometry_msgs::PoseStamped &pose){
+bool DVRK_Arm::move_cp(geometry_msgs::PoseStamped &pose){
     eeCmd.trans.setOrigin(tf::Vector3(pose.pose.position.x,
                            pose.pose.position.y,
                            pose.pose.position.z));
@@ -264,7 +264,7 @@ bool DVRK_Arm::set_pose(geometry_msgs::PoseStamped &pose){
     move_arm_cartesian(eeCmd.trans);
 }
 
-bool DVRK_Arm::set_transform(tf::Transform &trans){
+bool DVRK_Arm::move_cp(tf::Transform &trans){
     eeCmd.trans = trans;
     move_arm_cartesian(eeCmd.trans);
 }
