@@ -3,26 +3,26 @@
 struct States{
 public:
     States(){
-        mStates[DVRK_UNINITIALIZED] = "DVRK_UNINITIALIZED";
-        mStates[DVRK_POSITION_JOINT]= "DVRK_POSITION_JOINT";
-        mStates[DVRK_POSITION_CARTESIAN] = "DVRK_POSITION_CARTESIAN";
-        mStates[DVRK_EFFORT_CARTESIAN] = "DVRK_EFFORT_CARTESIAN";
+        stateMap[DVRK_UNINITIALIZED] = "DVRK_UNINITIALIZED";
+        stateMap[DVRK_POSITION_JOINT]= "DVRK_POSITION_JOINT";
+        stateMap[DVRK_POSITION_CARTESIAN] = "DVRK_POSITION_CARTESIAN";
+        stateMap[DVRK_EFFORT_CARTESIAN] = "DVRK_EFFORT_CARTESIAN";
 
 
-        _m_effort_mode = mStates[DVRK_EFFORT_CARTESIAN];
-        _m_jnt_pos_mode = mStates[DVRK_POSITION_JOINT];
-        _m_cart_pos_mode = mStates[DVRK_POSITION_CARTESIAN];
+        _m_effort_mode = stateMap[DVRK_EFFORT_CARTESIAN];
+        _m_jnt_pos_mode = stateMap[DVRK_POSITION_JOINT];
+        _m_cart_pos_mode = stateMap[DVRK_POSITION_CARTESIAN];
 
         activeState = DVRK_UNINITIALIZED;
     }
 
-    enum eSTATES{DVRK_UNINITIALIZED,
+    enum ARM_STATES{DVRK_UNINITIALIZED,
                 DVRK_POSITION_CARTESIAN,
                 DVRK_POSITION_JOINT,
                 DVRK_EFFORT_CARTESIAN};
-    eSTATES activeState;
+    ARM_STATES activeState;
 
-    std::map<eSTATES, std::string> mStates;
+    std::map<ARM_STATES, std::string> stateMap;
 
     std::string _m_effort_mode;
     std::string _m_jnt_pos_mode;

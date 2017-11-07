@@ -88,7 +88,7 @@ void DVRK_Bridge::wrench_sub_cb(const geometry_msgs::WrenchStampedConstPtr &msg)
 
 void DVRK_Bridge::state_sub_cb(const std_msgs::StringConstPtr &msg){
     cur_state = *msg;
-    for(std::map<eSTATES, std::string>::iterator it = mStates.begin(); it != mStates.end() ; ++it){
+    for(std::map<ARM_STATES, std::string>::iterator it = stateMap.begin(); it != stateMap.end() ; ++it){
         if(strcmp(cur_state.data.c_str(), it->second.c_str()) == 0){
             activeState = it->first;
         }
@@ -115,7 +115,7 @@ void DVRK_Bridge::timer_cb(const ros::TimerEvent& event){
 }
 
 void DVRK_Bridge::set_cur_mode(const std::string &state, bool lock_ori){
-    for(std::map<eSTATES, std::string>::iterator it = mStates.begin(); it != mStates.end() ; ++it){
+    for(std::map<ARM_STATES, std::string>::iterator it = stateMap.begin(); it != stateMap.end() ; ++it){
         if(strcmp(state.c_str(), it->second.c_str()) == 0){
             state_cmd.data = state;
             state_pub.publish(state_cmd);
