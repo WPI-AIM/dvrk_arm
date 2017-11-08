@@ -28,7 +28,7 @@ void DVRK_Arm::cisstPose_to_userTransform(const geometry_msgs::PoseStamped &pose
 
     freeFramePtr->trans.setOrigin(freeFramePtr->pos);
     freeFramePtr->trans.setRotation(freeFramePtr->rot_quat);
-    freeFramePtr->trans = originFramePtr->trans * freeFramePtr->trans * afxdTipFramePtr->trans;
+    freeFramePtr->trans = originFramePtr->trans.inverse() * freeFramePtr->trans * afxdTipFramePtr->trans;
     eeFramePtr->trans = freeFramePtr->trans;
 
     handle_frames();
@@ -275,7 +275,7 @@ void DVRK_Arm::set_mode(const std::string &state, bool lock_wrench_ori){
 
 void DVRK_Arm::move_arm_cartesian(tf::Transform trans){
     geometry_msgs::PoseStamped cmd_pose;
-    trans = originFramePtr->trans.inverse() * trans * afxdTipFramePtr->trans.inverse();
+    trans = originFramePtr->trans * trans * afxdTipFramePtr->trans.inverse();
     cmd_pose.pose.position.x = trans.getOrigin().getX();
     cmd_pose.pose.position.y = trans.getOrigin().getY();
     cmd_pose.pose.position.z = trans.getOrigin().getZ();
