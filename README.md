@@ -20,12 +20,12 @@ Keeping in mind the intended use of the library for different applications and U
 set the **Origin Frame**, such that all the **End Effector Transforms** (+ Position and Orientaiton, Forces and Moments)
 using the numerous overloaded functions are w.r.t the **Origin Frame**. 
 
-Not only that, one might wants the self defined directional coordinates of the End Effector (i.e. where should the x,y and z unit vectors of the tip be pointing). For this purpose, a **Tip Frame** can be affixed on the **End Effector Frame** which will case the **Tip Frame** to be reported w.r.t the **Origin Frame**.
+Not only that, one might want the self defined directional coordinates of the End Effector (i.e. where should the x,y and z unit vectors of the tip be pointing). For this purpose, a **Tip Frame** can be affixed on the **End Effector Frame** which will case the **Tip Frame** to be reported w.r.t the **Origin Frame**.
 
 #### Note:
 Keep in mind that the **Origin Frame is set w.r.t to the Default Origin used by CISST-SAW and Tip Frame is set w.r.t the End Effector Frame used by CISST-SAW for the specific manipulator**
 
-When setting the positions or forces on the dvrk Manipulators, the frames are already handeled so you just specify
+When setting the positions or forces on the dvrk Manipulators, the frames are already handled so you just specify
 the values w.r.t to the frames you set.
 
 ### Conversion Function
@@ -65,8 +65,8 @@ While setting just the position of **Origin Tranfrom** or **Tip Transform**, the
     tf::Transform ee_tran_cur;
     arm.get_cur_trans(ee_tran_cur);
     // Now, we might want the origin trans to be placed at the tip, so all position and angular
-    // offsets are zero. Just take the inverse of the cur_trans and set it as origin trans;
-    arm.set_origin_frame(ee_tran_cur.inverse());
+    // offsets are zero. Just take the cur_trans and set it as the origin trans;
+    arm.set_origin_frame(ee_tran_cur);
     // Now, lets say, we want the EE trans to be orientated differently.
     tf::Quaternion tip_quat;
     tip_quat.setRPY(0, M_PI/2, 0);
