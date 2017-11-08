@@ -53,7 +53,7 @@ While setting just the position of **Origin Tranfrom** or **Tip Transform**, the
     arm.get_position(x,y,z);
     arm.set_mode(arm._m_cart_pos_mode);
     sleep(1);
-    arm.set_position(-0.5,-0.25,-0.3);
+    arm.move_cp_pos(-0.5,-0.25,-0.3);
     
     //Check if arm is available
     
@@ -63,7 +63,7 @@ While setting just the position of **Origin Tranfrom** or **Tip Transform**, the
     DVRK_Arm arm("MTML");
     // Lets say we want to know what the current Transform between tip and origin is
     tf::Transform ee_tran_cur;
-    arm.get_cur_trans(ee_tran_cur);
+    arm.measured_cp(ee_tran_cur);
     // Now, we might want the origin trans to be placed at the tip, so all position and angular
     // offsets are zero. Just take the cur_trans and set it as the origin trans;
     arm.set_origin_frame(ee_tran_cur);
