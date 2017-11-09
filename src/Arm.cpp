@@ -320,8 +320,8 @@ void DVRK_Arm::set_arm_wrench(tf::Vector3 &force, tf::Vector3 &moment){
     }
     originFramePtr->rot_mat.setRotation(originFramePtr->trans.getRotation());
     geometry_msgs::Wrench cmd_wrench;
-    tf::vector3TFToMsg(originFramePtr->rot_mat.inverse() * force, cmd_wrench.force);
-    tf::vector3TFToMsg(originFramePtr->rot_mat.inverse() * moment, cmd_wrench.torque);
+    tf::vector3TFToMsg(originFramePtr->rot_mat * force, cmd_wrench.force);
+    tf::vector3TFToMsg(originFramePtr->rot_mat * moment, cmd_wrench.torque);
     //ROS_INFO("Ori F %f %f %f", force.x(),force.y(),force.z());
     //ROS_INFO("Ori M %f %f %f", moment.x(),moment.y(),moment.z());
     //ROS_INFO("Cmd F %f %f %f", cmd_wrench.force.x,cmd_wrench.force.y,cmd_wrench.force.z);
