@@ -58,6 +58,8 @@ public:
 private:
   Time start_;
   Duration expected_cycle_time_, actual_cycle_time_;
+  unsigned long int counter, packet_no;
+  double mean_cycle_time, total_cycle_time;
 };
 }
 

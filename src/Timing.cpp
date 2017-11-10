@@ -37,7 +37,6 @@
  *********************************************************************/
 
 #include "dvrk_arm/Timing.h"
-#include "ros/ros.h"
 
 namespace ros {
 
@@ -45,6 +44,10 @@ DVRK_Rate::DVRK_Rate(double frequency)
 : start_(Time::now())
 , expected_cycle_time_(1.0 / frequency)
 , actual_cycle_time_(0.0)
+, counter(0)
+, packet_no(0)
+, mean_cycle_time(0.0)
+, total_cycle_time(0.0)
 { }
 
 DVRK_Rate::DVRK_Rate(const Duration& d)
@@ -75,18 +78,27 @@ bool DVRK_Rate::sleep()
 
   //make sure to reset our start time
   start_ = expected_end;
+  packet_no++;
+  total_cycle_time += actual_cycle_time_.toSec();
+  mean_cycle_time = (total_cycle_time/packet_no);
 
   //if we've taken too much time we won't sleep
   if(sleep_time <= Duration(0.0))
   {
-    // if we've jumped forward in time, or the loop has taken more than a full extra
-    // cycle, reset our cycle
-    if (actual_end > expected_end + expected_cycle_time_)
-    {
-      start_ = actual_end;
-      ROS_ERROR("Error");
-    }
-    return true;
+      counter++;
+      std::cerr<<"Counter No: "<<counter<<std::endl
+               <<"Packets Received: "<<packet_no<<std::endl
+              << "Mean Cycle Time : "<< mean_cycle_time << std::endl
+              <<"Actual   Cycle " << actual_cycle_time_.toSec() << std::endl
+              << "Expected Cycle "<< expected_cycle_time_.toSec() << std::endl
+              << "-----------------------------------------------"<< std::endl;
+      // if we've jumped forward in time, or the loop has taken more than a full extra
+      // cycle, reset our cycle
+      if (actual_end > expected_end + expected_cycle_time_)
+      {
+          start_ = actual_end;
+      }
+      return true;
   }
 
   return sleep_time.sleep();

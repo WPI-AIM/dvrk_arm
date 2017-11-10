@@ -98,6 +98,7 @@ void DVRK_Bridge::state_sub_cb(const std_msgs::StringConstPtr &msg){
 
 void DVRK_Bridge::timer_cb(const ros::TimerEvent& event){
     cb_queue.callAvailable();
+    dvrk_rate->sleep();
     if(_start_pubs == true){
         switch (activeState) {
         case DVRK_POSITION_JOINT:
@@ -113,7 +114,6 @@ void DVRK_Bridge::timer_cb(const ros::TimerEvent& event){
             break;
         }
     }
-    dvrk_rate->sleep();
 }
 
 void DVRK_Bridge::set_cur_mode(const std::string &state, bool lock_ori){
