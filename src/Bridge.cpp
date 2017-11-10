@@ -35,7 +35,8 @@ void DVRK_Bridge::init(){
     n->setCallbackQueue(&cb_queue);
     nTimer->setCallbackQueue(&cb_queue_timer);
     rate.reset(new ros::Rate(1000));
-    timer = nTimer->createTimer(ros::Duration(1/(double)_freq), &DVRK_Bridge::timer_cb, this);
+    dvrk_rate.reset(new ros::DVRK_Rate(1000));
+    timer = nTimer->createTimer(ros::Duration(), &DVRK_Bridge::timer_cb, this);
     aspin.reset(new ros::AsyncSpinner(0, &cb_queue_timer));
 
     pose_sub = n->subscribe("/dvrk/" + arm_name + "/position_cartesian_current", 10, &DVRK_Bridge::pose_sub_cb, this);
@@ -112,6 +113,7 @@ void DVRK_Bridge::timer_cb(const ros::TimerEvent& event){
             break;
         }
     }
+    dvrk_rate->sleep();
 }
 
 void DVRK_Bridge::set_cur_mode(const std::string &state, bool lock_ori){

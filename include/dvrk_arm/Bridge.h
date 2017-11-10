@@ -16,6 +16,7 @@
 #include "ros/callback_queue.h"
 #include "dvrk_arm/States.h"
 #include "Conversion.h"
+#include "dvrk_arm/Timing.h"
 
 class DVRK_Bridge: public States, public DVRK_FootPedals{
 public:
@@ -39,6 +40,7 @@ public:
 
     typedef boost::shared_ptr<ros::NodeHandle> NodePtr;
     typedef boost::shared_ptr<ros::Rate> RatePtr;
+    typedef boost::shared_ptr<ros::DVRK_Rate> DvrkRatePtr;
     typedef boost::shared_ptr<ros::AsyncSpinner> AspinPtr;
 
     bool shutDown();
@@ -65,6 +67,7 @@ private:
     ros::Timer timer;
     AspinPtr aspin;
     RatePtr rate;
+    DvrkRatePtr dvrk_rate;
     int _freq;
 
     double scale;

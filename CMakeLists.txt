@@ -129,6 +129,7 @@ set(SRC_FILES
    src/Bridge.cpp
    src/Console.cpp
    src/FootPedals.cpp
+   src/Timing.cpp
 )
 set(HDR_FILES
    include/${PROJECT_NAME}/Arm.h
@@ -138,6 +139,7 @@ set(HDR_FILES
    include/${PROJECT_NAME}/Frame.h
    include/${PROJECT_NAME}/States.h
    include/${PROJECT_NAME}/Conversion.h
+   include/${PROJECT_NAME}/Timing.h
 )
 
 ## Declare a C++ library
