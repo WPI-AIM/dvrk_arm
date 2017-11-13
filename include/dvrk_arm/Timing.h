@@ -44,7 +44,7 @@ class DVRK_Rate
 {
 public:
 
-  DVRK_Rate(double frequency);
+  DVRK_Rate(double frequency, bool print_time_info = false);
   explicit DVRK_Rate(const Duration&);
 
   bool sleep();
@@ -57,9 +57,10 @@ public:
 
 private:
   Time start_;
-  Duration expected_cycle_time_, actual_cycle_time_;
-  unsigned long int counter, packet_no;
+  Duration expected_cycle_time_, actual_cycle_time_, min_cycle_time_, max_cycle_time_;
+  unsigned long int delay_no, packet_no;
   double mean_cycle_time, total_cycle_time;
+  bool prnt_info;
 };
 }
 

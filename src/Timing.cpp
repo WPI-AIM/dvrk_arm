@@ -40,11 +40,14 @@
 
 namespace ros {
 
-DVRK_Rate::DVRK_Rate(double frequency)
+DVRK_Rate::DVRK_Rate(double frequency, bool print_time_info)
 : start_(Time::now())
 , expected_cycle_time_(1.0 / frequency)
 , actual_cycle_time_(0.0)
-, counter(0)
+, min_cycle_time_(1.0)
+, max_cycle_time_(0.0)
+, prnt_info(print_time_info)
+, delay_no(0)
 , packet_no(0)
 , mean_cycle_time(0.0)
 , total_cycle_time(0.0)
@@ -67,11 +70,13 @@ bool DVRK_Rate::sleep()
   // detect backward jumps in time
   if (actual_end < start_)
   {
+    std::cerr << "Time shift backwards" << std::endl;
     expected_end = actual_end + expected_cycle_time_;
   }
 
   //calculate the time we'll sleep for
   Duration sleep_time = expected_end - actual_end;
+  Time sleep_till = start_ + expected_cycle_time_;
 
   //set the actual amount of time the loop took in case the user wants to know
   actual_cycle_time_ = actual_end - start_;
@@ -81,17 +86,27 @@ bool DVRK_Rate::sleep()
   packet_no++;
   total_cycle_time += actual_cycle_time_.toSec();
   mean_cycle_time = (total_cycle_time/packet_no);
+  if (actual_cycle_time_.toSec() > mean_cycle_time){
+      max_cycle_time_ = actual_cycle_time_;
+  }
+  if (actual_cycle_time_.toSec() < mean_cycle_time){
+      min_cycle_time_ = actual_cycle_time_;
+  }
 
   //if we've taken too much time we won't sleep
   if(sleep_time <= Duration(0.0))
   {
-      counter++;
-      std::cerr<<"Counter No: "<<counter<<std::endl
-               <<"Packets Received: "<<packet_no<<std::endl
-              << "Mean Cycle Time : "<< mean_cycle_time << std::endl
-              <<"Actual   Cycle " << actual_cycle_time_.toSec() << std::endl
-              << "Expected Cycle "<< expected_cycle_time_.toSec() << std::endl
-              << "-----------------------------------------------"<< std::endl;
+      delay_no++;
+      if(prnt_info){
+      std::cerr<< "Delay No: "<<delay_no<<std::endl
+               << "Packets Received: "<<packet_no<<std::endl
+               << "Min      Cycle Time(s) :"<< min_cycle_time_.toSec() << std::endl
+               << "Max      Cycle Time(s) :"<< max_cycle_time_.toSec() << std::endl
+               << "Mean     Cycle Time(s) :"<< mean_cycle_time << std::endl
+               << "Actual   Cycle Time(s) :"<< actual_cycle_time_.toSec() << std::endl
+               << "Expected Cycle Time(s) :"<< expected_cycle_time_.toSec() << std::endl
+               << "-----------------------------------------------"<< std::endl;
+      }
       // if we've jumped forward in time, or the loop has taken more than a full extra
       // cycle, reset our cycle
       if (actual_end > expected_end + expected_cycle_time_)
@@ -101,7 +116,15 @@ bool DVRK_Rate::sleep()
       return true;
   }
 
-  return sleep_time.sleep();
+//  std::cerr <<" Cur   Time  : " << ros::Time::now().toSec() << std::endl
+//            <<" Sleep Target: "<< sleep_till.toSec() << std::endl;
+  while (ros::Time::now().toSec() <= sleep_till.toSec()){
+
+  }
+//  std::cerr << " After Sleep: " << ros::Time::now().toSec()<< std::endl
+//  << "-----------------------------------------------"<< std::endl;
+
+  return true;
 }
 
 void DVRK_Rate::reset()
