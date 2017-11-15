@@ -269,8 +269,16 @@ bool DVRK_Arm::move_cp(tf::Transform &trans){
     move_arm_cartesian(eeCmd.trans);
 }
 
-bool DVRK_Arm::is_gripper_closed(){
+bool DVRK_Arm::is_gripper_pressed(){
     return _gripper_closed;
+}
+
+bool DVRK_Arm::is_clutch_pressed(){
+    return _clutch_pressed;
+}
+
+bool DVRK_Arm::is_coag_pressed(){
+    return _coag_pressed;
 }
 
 void DVRK_Arm::set_mode(const std::string &state, bool lock_wrench_ori){
