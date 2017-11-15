@@ -37,6 +37,7 @@ public:
     bool _in_jnt_pos_mode();
 
     bool _start_pubs;
+    bool _gripper_closed;
 
     typedef boost::shared_ptr<ros::NodeHandle> NodePtr;
     typedef boost::shared_ptr<ros::Rate> RatePtr;
@@ -63,6 +64,7 @@ private:
     ros::Subscriber joint_sub;
     ros::Subscriber state_sub;
     ros::Subscriber wrench_sub;
+    ros::Subscriber gripper_sub;
     ros::CallbackQueue cb_queue, cb_queue_timer;
     ros::Timer timer;
     AspinPtr aspin;
@@ -77,6 +79,7 @@ private:
     void pose_sub_cb(const geometry_msgs::PoseStampedConstPtr &msg);
     void joint_sub_cb(const sensor_msgs::JointStateConstPtr &msg);
     void wrench_sub_cb(const geometry_msgs::WrenchStampedConstPtr &wrench);
+    void gripper_sub_cb(const std_msgs::BoolConstPtr &gripper);
     void timer_cb(const ros::TimerEvent&);
     void _rate_sleep();
 
