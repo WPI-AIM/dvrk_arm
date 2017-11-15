@@ -205,6 +205,7 @@ bool DVRK_Bridge::shutDown(){
 }
 
 DVRK_Bridge::~DVRK_Bridge(){
+    std::cerr << "DESTROYING DVRK_BRIDGE" << std::endl;
 }
 
 

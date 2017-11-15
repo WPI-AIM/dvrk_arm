@@ -19,5 +19,5 @@ void DVRK_FootPedals::coag_sub_cb(const sensor_msgs::JoyConstPtr &msg){
 }
 
 DVRK_FootPedals::~DVRK_FootPedals(){
-
+    std::cerr << "DESTROYING DVRK_FOOTPEDALS" << std::endl;
 }

@@ -365,4 +365,5 @@ void DVRK_Arm::handle_frames(){
 }
 
 DVRK_Arm::~DVRK_Arm(){
+    std::cerr << "DESTROYING DVRK_ARM" << std::endl;
 }
