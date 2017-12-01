@@ -44,6 +44,7 @@ void DVRK_Bridge::init(){
     joint_sub = n->subscribe("/dvrk/" + arm_name + "/position_joint_current", 10, &DVRK_Bridge::joint_sub_cb, this);
     wrench_sub = n->subscribe("/dvrk/" + arm_name + "/wrench_body_current", 10, &DVRK_Bridge::wrench_sub_cb, this);
     gripper_sub = n->subscribe("/dvrk/" + arm_name + "/gripper_closed_event", 10, &DVRK_Bridge::gripper_sub_cb, this);
+    gripper_angle_sub = n->subscribe("/dvrk/" + arm_name + "/gripper_position_current", 10, &DVRK_Bridge::gripper_angle_sub_cb, this);
 
     joint_pub = n->advertise<sensor_msgs::JointState>("/dvrk/" + arm_name + "/set_position_joint", 10);
     pose_pub  = n->advertise<geometry_msgs::Pose>("/dvrk/" + arm_name + "/set_position_cartesian", 10);
@@ -100,6 +101,12 @@ void DVRK_Bridge::state_sub_cb(const std_msgs::StringConstPtr &msg){
 
 void DVRK_Bridge::gripper_sub_cb(const std_msgs::BoolConstPtr &gripper){
     _gripper_closed = gripper->data;
+}
+
+void DVRK_Bridge::gripper_angle_sub_cb(const std_msgs::Float32ConstPtr &pos){
+    if(gripperPosConversion._is_set){
+        gripperPosConversion.fcn_handle(*pos);
+    }
 }
 
 void DVRK_Bridge::timer_cb(const ros::TimerEvent& event){

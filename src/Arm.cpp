@@ -14,6 +14,7 @@ DVRK_Arm::DVRK_Arm(const std::string &arm_name): DVRK_Bridge(arm_name){
     poseConversion.assign_conversion_fcn(&DVRK_Arm::cisstPose_to_userTransform, this);
     jointConversion.assign_conversion_fcn(&DVRK_Arm::cisstJoint_to_userJoint, this);
     wrenchConversion.assign_conversion_fcn(&DVRK_Arm::cisstWrench_to_userWrench, this);
+    gripperPosConversion.assign_conversion_fcn(&DVRK_Arm::cisstGripper_to_userGripper, this);
     counter = 0;
 }
 
@@ -32,6 +33,10 @@ void DVRK_Arm::cisstPose_to_userTransform(const geometry_msgs::PoseStamped &pose
     eeFramePtr->trans = freeFramePtr->trans;
 
     handle_frames();
+}
+
+void DVRK_Arm::cisstGripper_to_userGripper(const std_msgs::Float32 &pos){
+    gripper_angle = pos.data;
 }
 
 void DVRK_Arm::cisstJoint_to_userJoint(const sensor_msgs::JointState &jnt){
@@ -208,6 +213,10 @@ void DVRK_Arm::measured_cp(geometry_msgs::Pose &pose){
 void DVRK_Arm::measured_cp(tf::Transform &trans){
     trans = eeFramePtr->trans;
     trans.setRotation(trans.getRotation().normalized());
+}
+
+void DVRK_Arm::measured_gripper_angle(double &pos){
+    pos = gripper_angle;
 }
 
 bool DVRK_Arm::move_cp_pos(const double &x, const double &y, const double &z){

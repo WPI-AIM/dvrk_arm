@@ -7,6 +7,7 @@
 #include "sensor_msgs/Joy.h"
 #include "std_msgs/String.h"
 #include "std_msgs/Bool.h"
+#include "std_msgs/Float32.h"
 #include "geometry_msgs/WrenchStamped.h"
 #include "FootPedals.h"
 #include "Console.h"
@@ -49,6 +50,7 @@ public:
     Conversion<const geometry_msgs::PoseStamped&> poseConversion;
     Conversion<const sensor_msgs::JointState&> jointConversion;
     Conversion<const geometry_msgs::WrenchStamped&> wrenchConversion;
+    Conversion<const std_msgs::Float32&> gripperPosConversion;
 
 private:
     std::string arm_name;
@@ -65,6 +67,7 @@ private:
     ros::Subscriber state_sub;
     ros::Subscriber wrench_sub;
     ros::Subscriber gripper_sub;
+    ros::Subscriber gripper_angle_sub;
     ros::CallbackQueue cb_queue, cb_queue_timer;
     ros::Timer timer;
     AspinPtr aspin;
@@ -80,6 +83,7 @@ private:
     void joint_sub_cb(const sensor_msgs::JointStateConstPtr &msg);
     void wrench_sub_cb(const geometry_msgs::WrenchStampedConstPtr &wrench);
     void gripper_sub_cb(const std_msgs::BoolConstPtr &gripper);
+    void gripper_angle_sub_cb(const std_msgs::Float32ConstPtr &pos);
     void timer_cb(const ros::TimerEvent&);
     void _rate_sleep();
 

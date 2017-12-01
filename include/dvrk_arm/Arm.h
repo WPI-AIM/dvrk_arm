@@ -81,6 +81,8 @@ public:
     void measured_cp(geometry_msgs::Pose &pose);
     void measured_cp(tf::Transform &trans);
 
+    void measured_gripper_angle(double &pos);
+
     bool is_gripper_pressed(); //Presed or Released, for MTM
     bool is_clutch_pressed();
     bool is_coag_pressed();
@@ -92,6 +94,7 @@ private:
     void init();
     void handle_frames();
     void cisstPose_to_userTransform(const geometry_msgs::PoseStamped &pose);
+    void cisstGripper_to_userGripper(const std_msgs::Float32 &pos);
     void cisstJoint_to_userJoint(const sensor_msgs::JointState &jnt);
     void cisstWrench_to_userWrench(const geometry_msgs::WrenchStamped &wrench);
     void userPose_to_cisstPose(geometry_msgs::PoseStamped &pose);
@@ -105,6 +108,7 @@ private:
     std::vector<FramePtr> frameptrVec;
     std::vector<FramePtr>::iterator frameIter;
     tf::TransformBroadcaster frame_broadcaster;
+    double gripper_angle;
     int counter;
 
 };
