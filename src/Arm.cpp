@@ -388,3 +388,13 @@ void DVRK_Arm::handle_frames(){
 DVRK_Arm::~DVRK_Arm(){
     std::cerr << "DESTROYING DVRK_ARM" << std::endl;
 }
+
+
+extern "C"{
+DVRK_Arm* create(std::string arm_name){
+    return new DVRK_Arm(arm_name);
+}
+void destroy(DVRK_Arm* arm_obj){
+    delete arm_obj;
+}
+}
