@@ -29,7 +29,7 @@ void DVRK_Bridge::init(){
     int argc;
     char** argv;
     ros::M_string s;
-    ros::init(s, arm_name + "_interface_node", ros::init_options::NoSigintHandler);
+//    ros::init(s, arm_name + "_interface_node", ros::init_options::NoSigintHandler);
     n.reset(new ros::NodeHandle);
     nTimer.reset(new ros::NodeHandle);
     n->setCallbackQueue(&cb_queue);
@@ -62,6 +62,7 @@ void DVRK_Bridge::init(){
 
     DVRK_FootPedals::init(n);
     _start_pubs = false;
+    _on = true;
     sleep(1);
     aspin->start();
     scale = 0.1;
@@ -110,21 +111,23 @@ void DVRK_Bridge::gripper_angle_sub_cb(const std_msgs::Float32ConstPtr &pos){
 }
 
 void DVRK_Bridge::timer_cb(const ros::TimerEvent& event){
-    cb_queue.callAvailable();
-    dvrk_rate->sleep();
-    if(_start_pubs == true){
-        switch (activeState) {
-        case DVRK_POSITION_JOINT:
-            joint_pub.publish(cmd_joint);
-            break;
-        case DVRK_POSITION_CARTESIAN:
-            pose_pub.publish(cmd_pose.pose);
-            break;
-        case DVRK_EFFORT_CARTESIAN:
-            force_pub.publish(cmd_wrench.wrench);
-            break;
-        default:
-            break;
+    if (n->ok() && _on){
+        cb_queue.callAvailable();
+        dvrk_rate->sleep();
+        if(_start_pubs == true){
+            switch (activeState) {
+            case DVRK_POSITION_JOINT:
+                joint_pub.publish(cmd_joint);
+                break;
+            case DVRK_POSITION_CARTESIAN:
+                pose_pub.publish(cmd_pose.pose);
+                break;
+            case DVRK_EFFORT_CARTESIAN:
+                force_pub.publish(cmd_wrench.wrench);
+                break;
+            default:
+                break;
+            }
         }
     }
 }
@@ -210,15 +213,14 @@ bool DVRK_Bridge::_in_jnt_pos_mode(){
 }
 
 bool DVRK_Bridge::shutDown(){
-    std::cerr<<"Shutdown called"<<std::endl;
-    n.reset();
-    nTimer.reset();
+    std::cerr<<"Shutdown called and Turning Off"<<std::endl;
+    _on = false;
     ros::shutdown();
     return true;
 }
 
-//DVRK_Bridge::~DVRK_Bridge(){
-//    std::cerr << "DESTROYING DVRK_BRIDGE" << std::endl;
-//}
+DVRK_Bridge::~DVRK_Bridge(){
+    std::cerr << "DESTROYING DVRK_BRIDGE" << std::endl;
+}
 
 

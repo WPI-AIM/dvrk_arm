@@ -25,7 +25,7 @@ public:
     friend class DVRK_Console;
 
     DVRK_Bridge(const std::string &arm_name, int bridge_frequnce = 1000);
-//    ~DVRK_Bridge();
+    ~DVRK_Bridge();
 
     void set_cur_pose(const geometry_msgs::PoseStamped &pose);
     void set_cur_wrench(const geometry_msgs::Wrench &wrench);
@@ -91,6 +91,7 @@ private:
     sensor_msgs::JointState cur_joint, pre_joint, cmd_joint;
     std_msgs::String cur_state, state_cmd;
     geometry_msgs::WrenchStamped cur_wrench, cmd_wrench;
+    bool _on;
 };
 
 #endif

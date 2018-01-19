@@ -20,7 +20,7 @@ public:
 };
 
 
-class DVRK_Arm: public DVRK_Bridge{
+class DVRK_Arm: public States{
 public:
     DVRK_Arm(const std::string &arm_name);
     ~DVRK_Arm();
@@ -88,6 +88,15 @@ public:
     bool is_coag_pressed();
 
     void set_mode(const std::string &state, bool lock_wrench_ori = true);
+
+    bool _is_available(){return m_bridge._is_available();}
+    bool _in_effort_mode(){return m_bridge._in_effort_mode();}
+    bool _in_cart_pos_mode(){return m_bridge._in_cart_pos_mode();}
+    bool _in_jnt_pos_mode(){return m_bridge._in_jnt_pos_mode();}
+
+    bool start_pubs;
+    bool gripper_closed;
+
     bool close();
 
 private:
@@ -111,6 +120,8 @@ private:
     tf::TransformBroadcaster frame_broadcaster;
     double gripper_angle;
     int counter;
+
+    DVRK_Bridge m_bridge;
 
 };
 #endif
