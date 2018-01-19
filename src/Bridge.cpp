@@ -213,7 +213,6 @@ bool DVRK_Bridge::shutDown(){
     ROS_WARN("Shutdown called");
     cb_queue.clear();
     aspin->stop();
-    ros::shutdown();
     return true;
 }
 
