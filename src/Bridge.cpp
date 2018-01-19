@@ -29,7 +29,7 @@ void DVRK_Bridge::init(){
     int argc;
     char** argv;
     ros::M_string s;
-    ros::init(s, arm_name + "_interface_node");
+    ros::init(s, arm_name + "_interface_node", ros::init_options::NoSigintHandler);
     n.reset(new ros::NodeHandle);
     nTimer.reset(new ros::NodeHandle);
     n->setCallbackQueue(&cb_queue);
@@ -210,14 +210,15 @@ bool DVRK_Bridge::_in_jnt_pos_mode(){
 }
 
 bool DVRK_Bridge::shutDown(){
-    ROS_WARN("Shutdown called");
-    cb_queue.clear();
-    aspin->stop();
+    std::cerr<<"Shutdown called"<<std::endl;
+    n.reset();
+    nTimer.reset();
+    ros::shutdown();
     return true;
 }
 
-DVRK_Bridge::~DVRK_Bridge(){
-    std::cerr << "DESTROYING DVRK_BRIDGE" << std::endl;
-}
+//DVRK_Bridge::~DVRK_Bridge(){
+//    std::cerr << "DESTROYING DVRK_BRIDGE" << std::endl;
+//}
 
 

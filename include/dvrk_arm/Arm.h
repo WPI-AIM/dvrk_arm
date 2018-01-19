@@ -88,6 +88,7 @@ public:
     bool is_coag_pressed();
 
     void set_mode(const std::string &state, bool lock_wrench_ori = true);
+    bool close();
 
 private:
 
