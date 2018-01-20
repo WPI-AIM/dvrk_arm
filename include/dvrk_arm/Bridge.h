@@ -17,7 +17,8 @@
 #include "ros/callback_queue.h"
 #include "dvrk_arm/States.h"
 #include "Conversion.h"
-#include "dvrk_arm/Timing.h"
+//#include "dvrk_arm/Timing.h"b
+#include "boost/thread.hpp"
 
 class DVRK_Bridge: public States{
 public:
@@ -54,7 +55,7 @@ public:
 private:
     std::string arm_name;
 
-    NodePtr n, nTimer;
+    NodePtr n;//, nTimer;
     ros::Publisher force_pub;
     ros::Publisher force_orientation_lock_pub;
     ros::Publisher state_pub;
@@ -67,9 +68,9 @@ private:
     ros::Subscriber wrench_sub;
     ros::Subscriber gripper_sub;
     ros::Subscriber gripper_angle_sub;
-    ros::CallbackQueue cb_queue, cb_queue_timer;
-    ros::Timer timer;
-    AspinPtr aspin;
+    ros::CallbackQueue cb_queue;//, cb_queue_timer;
+//    ros::Timer timer;
+//    AspinPtr aspin;
     RatePtr rate;
     int _freq;
 
@@ -84,6 +85,8 @@ private:
     void gripper_angle_sub_cb(const std_msgs::Float32ConstPtr &pos);
     void timer_cb(const ros::TimerEvent&);
     void _rate_sleep();
+    void loop();
+    boost::shared_ptr<boost::thread> loop_thread;
 
     geometry_msgs::PoseStamped cur_pose, pre_pose, cmd_pose;
     sensor_msgs::JointState cur_joint, pre_joint, cmd_joint;
