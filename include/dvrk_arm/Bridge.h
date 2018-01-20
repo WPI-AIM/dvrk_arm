@@ -9,8 +9,8 @@
 #include "std_msgs/Bool.h"
 #include "std_msgs/Float32.h"
 #include "geometry_msgs/WrenchStamped.h"
-#include "FootPedals.h"
-#include "Console.h"
+//#include "FootPedals.h"
+//#include "Console.h"
 #include "string.h"
 #include "boost/bind.hpp"
 #include "boost/function.hpp"
@@ -19,10 +19,10 @@
 #include "Conversion.h"
 #include "dvrk_arm/Timing.h"
 
-class DVRK_Bridge: public States, public DVRK_FootPedals{
+class DVRK_Bridge: public States{
 public:
-    friend class DVRK_FootPedals;
-    friend class DVRK_Console;
+//    friend class DVRK_FootPedals;
+//    friend class DVRK_Console;
 
     DVRK_Bridge(const std::string &arm_name, int bridge_frequnce = 1000);
     ~DVRK_Bridge();
@@ -42,7 +42,6 @@ public:
 
     typedef boost::shared_ptr<ros::NodeHandle> NodePtr;
     typedef boost::shared_ptr<ros::Rate> RatePtr;
-    typedef boost::shared_ptr<ros::DVRK_Rate> DvrkRatePtr;
     typedef boost::shared_ptr<ros::AsyncSpinner> AspinPtr;
 
     bool shutDown();
@@ -72,7 +71,6 @@ private:
     ros::Timer timer;
     AspinPtr aspin;
     RatePtr rate;
-    DvrkRatePtr dvrk_rate;
     int _freq;
 
     double scale;

@@ -17,11 +17,11 @@ DVRK_Bridge::DVRK_Bridge(const std::string &arm_name, int bridge_frequency): _fr
     }
 
     if(_valid_arm){
-        ROS_INFO("Specified arm is %s:", arm_name.c_str());
+        std::cerr<<"Specified arm is " << arm_name << std::endl;
         init();
     }
     else{
-        ROS_ERROR("%s Invalid Arm Specified", arm_name.c_str());
+        std::cerr<<"INVALID ARM SPECIFIED " << arm_name << std::endl;
     }
 }
 
@@ -29,13 +29,12 @@ void DVRK_Bridge::init(){
     int argc;
     char** argv;
     ros::M_string s;
-//    ros::init(s, arm_name + "_interface_node", ros::init_options::NoSigintHandler);
+    ros::init(s, arm_name + "_interface_node");
     n.reset(new ros::NodeHandle);
     nTimer.reset(new ros::NodeHandle);
     n->setCallbackQueue(&cb_queue);
     nTimer->setCallbackQueue(&cb_queue_timer);
     rate.reset(new ros::Rate(1000));
-    dvrk_rate.reset(new ros::DVRK_Rate(1000));
     timer = nTimer->createTimer(ros::Duration(), &DVRK_Bridge::timer_cb, this);
     aspin.reset(new ros::AsyncSpinner(0, &cb_queue_timer));
 
@@ -60,7 +59,7 @@ void DVRK_Bridge::init(){
     cmd_wrench.wrench.force.x = 0; cmd_wrench.wrench.force.y = 0; cmd_wrench.wrench.force.z = 0;
     cmd_wrench.wrench.torque.x = 0; cmd_wrench.wrench.torque.y = 0; cmd_wrench.wrench.torque.z = 0;
 
-    DVRK_FootPedals::init(n);
+//    init_footpedals(n);
     _start_pubs = false;
     _on = true;
     sleep(1);
@@ -113,7 +112,7 @@ void DVRK_Bridge::gripper_angle_sub_cb(const std_msgs::Float32ConstPtr &pos){
 void DVRK_Bridge::timer_cb(const ros::TimerEvent& event){
     if (n->ok() && _on){
         cb_queue.callAvailable();
-        dvrk_rate->sleep();
+        rate->sleep();
         if(_start_pubs == true){
             switch (activeState) {
             case DVRK_POSITION_JOINT:
@@ -213,9 +212,15 @@ bool DVRK_Bridge::_in_jnt_pos_mode(){
 }
 
 bool DVRK_Bridge::shutDown(){
+    aspin.reset();
+    nTimer.reset();
+    rate.reset();
+    n.reset();
+    cb_queue_timer.clear();
+    cb_queue.clear();
+    ros::shutdown();
     std::cerr<<"Shutdown called and Turning Off"<<std::endl;
     _on = false;
-    ros::shutdown();
     return true;
 }
 

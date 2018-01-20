@@ -89,10 +89,10 @@ public:
 
     void set_mode(const std::string &state, bool lock_wrench_ori = true);
 
-    bool _is_available(){return m_bridge._is_available();}
-    bool _in_effort_mode(){return m_bridge._in_effort_mode();}
-    bool _in_cart_pos_mode(){return m_bridge._in_cart_pos_mode();}
-    bool _in_jnt_pos_mode(){return m_bridge._in_jnt_pos_mode();}
+    bool _is_available(){return true;}
+    bool _in_effort_mode(){return true;}
+    bool _in_cart_pos_mode(){return true;}
+    bool _in_jnt_pos_mode(){return m_bridge->_in_jnt_pos_mode();}
 
     bool start_pubs;
     bool gripper_closed;
@@ -117,11 +117,11 @@ private:
     Command eeCmd;
     std::vector<FramePtr> frameptrVec;
     std::vector<FramePtr>::iterator frameIter;
-    tf::TransformBroadcaster frame_broadcaster;
+//    boost::shared_ptr<tf::TransformBroadcaster> frame_broadcasterPtr;
     double gripper_angle;
     int counter;
 
-    DVRK_Bridge m_bridge;
+    boost::shared_ptr<DVRK_Bridge> m_bridge;
 
 };
 #endif
