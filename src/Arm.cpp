@@ -396,8 +396,7 @@ DVRK_Arm::~DVRK_Arm(){
 extern "C"{
 std::vector<std::string> get_active_arms(){
     std::vector<std::string> active_arm_names;
-    active_arm_names.push_back("MTMR");
-    active_arm_names.push_back("MTML");
+    DVRK_Bridge::get_arms_from_rostopics(active_arm_names);
     return active_arm_names;
 }
 boost::shared_ptr<DVRK_Arm> create(std::string arm_name){

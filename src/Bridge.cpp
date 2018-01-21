@@ -176,6 +176,28 @@ bool DVRK_Bridge::_is_available(){
 
 }
 
+void DVRK_Bridge::get_arms_from_rostopics(std::vector<std::string> &arm_names){
+    ros::M_string s;
+    ros::init(s, "dvrk_arm_node");
+    if (ros::master::check()){
+        std::string armR, armL, checkR, checkL;
+        armR = "MTMR";
+        armL = "MTML";
+        checkR = std::string("/dvrk/" + armR + "/status");
+        checkL = std::string("/dvrk/" + armL + "/status");
+        ros::master::V_TopicInfo topics;
+        ros::master::getTopics(topics);
+        for(int i = 0 ; i < topics.size() ; i++){
+            if(strcmp(topics[i].name.c_str(), checkR.c_str()) == 0){
+                arm_names.push_back(armR);
+            }
+            if(strcmp(topics[i].name.c_str(), checkL.c_str()) == 0){
+                arm_names.push_back(armL);
+            }
+        }
+    }
+}
+
 bool DVRK_Bridge::_in_effort_mode(){
     if(_is_available()){
         if(strcmp(cur_state.data.c_str(), _m_effort_mode.c_str()) == 0){
@@ -212,26 +234,15 @@ bool DVRK_Bridge::_in_jnt_pos_mode(){
 bool DVRK_Bridge::shutDown(){
     _on = false;
     ros::shutdown();
-//    aspin->stop();
-//    aspin.reset();
-//    nTimer.reset();
-//    _on = false;
     usleep(100000);
     loop_thread->interrupt();
     loop_thread.reset();
-//    rate.reset();
-//    n.reset();
-//    cb_queue_timer.clear();
-//    cb_queue.clear();
-//    timer.stop();
-//    ros::shutdown();
+
     std::cerr<<"Shutdown called and Turning Off"<<std::endl;
     return true;
 }
 
 DVRK_Bridge::~DVRK_Bridge(){
-    //loop_thread.reset();
-    //rate.reset();
     ros::shutdown();
     std::cerr << "DESTROYING DVRK_BRIDGE" << std::endl;
 }

@@ -38,6 +38,8 @@ public:
     bool _in_cart_pos_mode();
     bool _in_jnt_pos_mode();
 
+    static void get_arms_from_rostopics(std::vector<std::string> &arm_names);
+
     bool _start_pubs;
     bool _gripper_closed;
 
