@@ -9,21 +9,21 @@
 #include "std_msgs/Bool.h"
 #include "std_msgs/Float32.h"
 #include "geometry_msgs/WrenchStamped.h"
-//#include "FootPedals.h"
-//#include "Console.h"
+#include "FootPedals.h"
+#include "Console.h"
 #include "string.h"
 #include "boost/bind.hpp"
 #include "boost/function.hpp"
 #include "ros/callback_queue.h"
 #include "dvrk_arm/States.h"
 #include "Conversion.h"
-//#include "dvrk_arm/Timing.h"b
+#include "dvrk_arm/Timing.h"
 #include "boost/thread.hpp"
 
-class DVRK_Bridge: public States{
+class DVRK_Bridge: public States, public DVRK_FootPedals{
 public:
-//    friend class DVRK_FootPedals;
-//    friend class DVRK_Console;
+    friend class DVRK_FootPedals;
+    friend class DVRK_Console;
 
     DVRK_Bridge(const std::string &arm_name, int bridge_frequnce = 1000);
     ~DVRK_Bridge();
@@ -55,7 +55,7 @@ public:
 private:
     std::string arm_name;
 
-    NodePtr n;//, nTimer;
+    NodePtr n;
     ros::Publisher force_pub;
     ros::Publisher force_orientation_lock_pub;
     ros::Publisher state_pub;
@@ -68,9 +68,7 @@ private:
     ros::Subscriber wrench_sub;
     ros::Subscriber gripper_sub;
     ros::Subscriber gripper_angle_sub;
-    ros::CallbackQueue cb_queue;//, cb_queue_timer;
-//    ros::Timer timer;
-//    AspinPtr aspin;
+    ros::CallbackQueue cb_queue;
     RatePtr rate;
     int _freq;
 

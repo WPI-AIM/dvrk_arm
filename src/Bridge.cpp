@@ -30,14 +30,10 @@ void DVRK_Bridge::init(){
     int argc;
     char** argv;
     ros::M_string s;
-    ros::init(s, arm_name + "_interface_node", ros::init_options::NoSigintHandler);
+    ros::init(s, arm_name + "_interface_node");
     n.reset(new ros::NodeHandle);
-//    nTimer.reset(new ros::NodeHandle);
     n->setCallbackQueue(&cb_queue);
-//    nTimer->setCallbackQueue(&cb_queue_timer);
     rate.reset(new ros::Rate(1000));
-//    timer = nTimer->createTimer(ros::Duration(), &DVRK_Bridge::timer_cb, this);
-//    aspin.reset(new ros::AsyncSpinner(0, &cb_queue_timer));
 
     pose_sub = n->subscribe("/dvrk/" + arm_name + "/position_cartesian_current", 10, &DVRK_Bridge::pose_sub_cb, this);
     state_sub = n->subscribe("/dvrk/" + arm_name + "/robot_state", 10, &DVRK_Bridge::state_sub_cb, this);
@@ -60,12 +56,11 @@ void DVRK_Bridge::init(){
     cmd_wrench.wrench.force.x = 0; cmd_wrench.wrench.force.y = 0; cmd_wrench.wrench.force.z = 0;
     cmd_wrench.wrench.torque.x = 0; cmd_wrench.wrench.torque.y = 0; cmd_wrench.wrench.torque.z = 0;
 
-//    init_footpedals(n);
+    init_footpedals(n);
     loop_thread.reset(new boost::thread(boost::bind(&DVRK_Bridge::loop, this)));
     _start_pubs = false;
     _on = true;
 //    sleep(1);
-//    aspin->start();
     scale = 0.1;
 }
 
@@ -111,28 +106,6 @@ void DVRK_Bridge::gripper_angle_sub_cb(const std_msgs::Float32ConstPtr &pos){
     }
 }
 
-//void DVRK_Bridge::timer_cb(const ros::TimerEvent& event){
-//    if (n->ok() && _on){
-//        cb_queue.callAvailable();
-//        rate->sleep();
-//        if(_start_pubs == true){
-//            switch (activeState) {
-//            case DVRK_POSITION_JOINT:
-//                joint_pub.publish(cmd_joint);
-//                break;
-//            case DVRK_POSITION_CARTESIAN:
-//                pose_pub.publish(cmd_pose.pose);
-//                break;
-//            case DVRK_EFFORT_CARTESIAN:
-//                force_pub.publish(cmd_wrench.wrench);
-//                break;
-//            default:
-//                break;
-//            }
-//        }
-//    }
-//}
-
 void DVRK_Bridge::loop(){
     while (n->ok() && _on){
         cb_queue.callAvailable();
@@ -153,6 +126,7 @@ void DVRK_Bridge::loop(){
             }
         }
     }
+    std::cerr << "Loop thread exit" <<std::endl;
 }
 
 void DVRK_Bridge::set_cur_mode(const std::string &state, bool lock_ori){
@@ -236,14 +210,17 @@ bool DVRK_Bridge::_in_jnt_pos_mode(){
 }
 
 bool DVRK_Bridge::shutDown(){
+    _on = false;
+    ros::shutdown();
 //    aspin->stop();
 //    aspin.reset();
 //    nTimer.reset();
-    _on = false;
-    sleep(1);
+//    _on = false;
+    usleep(100000);
+    loop_thread->interrupt();
     loop_thread.reset();
-    rate.reset();
-    n.reset();
+//    rate.reset();
+//    n.reset();
 //    cb_queue_timer.clear();
 //    cb_queue.clear();
 //    timer.stop();
@@ -253,6 +230,9 @@ bool DVRK_Bridge::shutDown(){
 }
 
 DVRK_Bridge::~DVRK_Bridge(){
+    //loop_thread.reset();
+    //rate.reset();
+    ros::shutdown();
     std::cerr << "DESTROYING DVRK_BRIDGE" << std::endl;
 }
 

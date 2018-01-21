@@ -7,6 +7,7 @@
 #include "boost/shared_ptr.hpp"
 #include "dvrk_arm/Frame.h"
 #include "tf/transform_broadcaster.h"
+#include <cmath>
 
 struct Command: public Frame{
 public:
