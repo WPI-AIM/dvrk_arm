@@ -18,11 +18,11 @@ DVRK_Bridge::DVRK_Bridge(const std::string &arm_name, int bridge_frequency): _fr
     }
 
     if(_valid_arm){
-        std::cerr<<"Specified arm is " << arm_name << std::endl;
+        std::cerr<<"CONNECTING TO: " << arm_name << std::endl;
         init();
     }
     else{
-        std::cerr<<"INVALID ARM SPECIFIED " << arm_name << std::endl;
+        std::cerr<<"INVALID ARM SPECIFIED: " << arm_name << std::endl;
     }
 }
 
@@ -60,7 +60,7 @@ void DVRK_Bridge::init(){
     loop_thread.reset(new boost::thread(boost::bind(&DVRK_Bridge::loop, this)));
     _start_pubs = false;
     _on = true;
-//    sleep(1);
+    usleep(300000);
     scale = 0.1;
 }
 
@@ -238,11 +238,11 @@ bool DVRK_Bridge::shutDown(){
     loop_thread->interrupt();
     loop_thread.reset();
 
-    std::cerr<<"Shutdown called and Turning Off"<<std::endl;
+    std::cerr<<"Shutdown called for: "<< arm_name <<std::endl;
     return true;
 }
 
 DVRK_Bridge::~DVRK_Bridge(){
     ros::shutdown();
-    std::cerr << "DESTROYING DVRK_BRIDGE" << std::endl;
+    std::cerr << "CLOSING DVRK_BRIDGE" << std::endl;
 }

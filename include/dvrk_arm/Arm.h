@@ -90,10 +90,10 @@ public:
 
     void set_mode(const std::string &state, bool lock_wrench_ori = true);
 
-    bool _is_available(){return true;}
-    bool _in_effort_mode(){return true;}
-    bool _in_cart_pos_mode(){return true;}
-    bool _in_jnt_pos_mode(){return m_bridge->_in_jnt_pos_mode();}
+    inline bool is_available(){return m_bridge->_is_available();}
+    inline bool in_effort_mode(){return m_bridge->_in_effort_mode();}
+    inline bool in_cart_pos_mode(){return m_bridge->_in_cart_pos_mode();}
+    inline bool in_jnt_pos_mode(){return m_bridge->_in_jnt_pos_mode();}
 
     bool start_pubs;
     bool gripper_closed;

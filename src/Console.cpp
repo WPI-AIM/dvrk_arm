@@ -7,5 +7,5 @@ void DVRK_Console::init_console(ros::NodeHandle *n){
 }
 
 DVRK_Console::~DVRK_Console(){
-    std::cerr << "DESTROYING DVRK_CONSOLE" << std::endl;
+//    std::cerr << "CLOSING DVRK_CONSOLE" << std::endl;
 }

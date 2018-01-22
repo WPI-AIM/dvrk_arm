@@ -16,8 +16,6 @@ DVRK_Arm::DVRK_Arm(const std::string &arm_name){
     m_bridge->wrenchConversion.assign_conversion_fcn(&DVRK_Arm::cisstWrench_to_userWrench, this);
     m_bridge->gripperPosConversion.assign_conversion_fcn(&DVRK_Arm::cisstGripper_to_userGripper, this);
     counter = 0;
-
-
 }
 
 void DVRK_Arm::init(){
@@ -389,7 +387,7 @@ bool DVRK_Arm::close(){
 }
 
 DVRK_Arm::~DVRK_Arm(){
-    std::cerr << "DESTROYING DVRK_ARM" << std::endl;
+    std::cerr << "CLOSING DVRK_ARM" << std::endl;
 }
 
 
