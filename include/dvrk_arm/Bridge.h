@@ -85,7 +85,7 @@ private:
     void gripper_angle_sub_cb(const std_msgs::Float32ConstPtr &pos);
     void timer_cb(const ros::TimerEvent&);
     void _rate_sleep();
-    void loop();
+    void run();
     boost::shared_ptr<boost::thread> loop_thread;
 
     geometry_msgs::PoseStamped cur_pose, pre_pose, cmd_pose;

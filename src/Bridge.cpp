@@ -57,7 +57,7 @@ void DVRK_Bridge::init(){
     cmd_wrench.wrench.torque.x = 0; cmd_wrench.wrench.torque.y = 0; cmd_wrench.wrench.torque.z = 0;
 
     init_footpedals(n);
-    loop_thread.reset(new boost::thread(boost::bind(&DVRK_Bridge::loop, this)));
+    loop_thread.reset(new boost::thread(boost::bind(&DVRK_Bridge::run, this)));
     _start_pubs = false;
     _on = true;
     usleep(300000);
@@ -106,7 +106,7 @@ void DVRK_Bridge::gripper_angle_sub_cb(const std_msgs::Float32ConstPtr &pos){
     }
 }
 
-void DVRK_Bridge::loop(){
+void DVRK_Bridge::run(){
     while (n->ok() && _on){
         cb_queue.callAvailable();
         rate->sleep();
@@ -126,7 +126,6 @@ void DVRK_Bridge::loop(){
             }
         }
     }
-    std::cerr << "Loop thread exit" <<std::endl;
 }
 
 void DVRK_Bridge::set_cur_mode(const std::string &state, bool lock_ori){
