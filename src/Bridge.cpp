@@ -1,5 +1,6 @@
 #include "dvrk_arm/Bridge.h"
 
+
 DVRK_Bridge::DVRK_Bridge(const std::string &arm_name, int bridge_frequency): _freq(bridge_frequency){
     valid_arms.push_back("MTML");
     valid_arms.push_back("MTMR");
@@ -17,11 +18,11 @@ DVRK_Bridge::DVRK_Bridge(const std::string &arm_name, int bridge_frequency): _fr
     }
 
     if(_valid_arm){
-        ROS_INFO("Specified arm is %s:", arm_name.c_str());
+        std::cerr<<"Specified arm is " << arm_name << std::endl;
         init();
     }
     else{
-        ROS_ERROR("%s Invalid Arm Specified", arm_name.c_str());
+        std::cerr<<"INVALID ARM SPECIFIED " << arm_name << std::endl;
     }
 }
 
@@ -31,13 +32,8 @@ void DVRK_Bridge::init(){
     ros::M_string s;
     ros::init(s, arm_name + "_interface_node");
     n.reset(new ros::NodeHandle);
-    nTimer.reset(new ros::NodeHandle);
     n->setCallbackQueue(&cb_queue);
-    nTimer->setCallbackQueue(&cb_queue_timer);
     rate.reset(new ros::Rate(1000));
-    dvrk_rate.reset(new ros::DVRK_Rate(1000));
-    timer = nTimer->createTimer(ros::Duration(), &DVRK_Bridge::timer_cb, this);
-    aspin.reset(new ros::AsyncSpinner(0, &cb_queue_timer));
 
     pose_sub = n->subscribe("/dvrk/" + arm_name + "/position_cartesian_current", 10, &DVRK_Bridge::pose_sub_cb, this);
     state_sub = n->subscribe("/dvrk/" + arm_name + "/robot_state", 10, &DVRK_Bridge::state_sub_cb, this);
@@ -60,10 +56,11 @@ void DVRK_Bridge::init(){
     cmd_wrench.wrench.force.x = 0; cmd_wrench.wrench.force.y = 0; cmd_wrench.wrench.force.z = 0;
     cmd_wrench.wrench.torque.x = 0; cmd_wrench.wrench.torque.y = 0; cmd_wrench.wrench.torque.z = 0;
 
-    DVRK_FootPedals::init(n);
+    init_footpedals(n);
+    loop_thread.reset(new boost::thread(boost::bind(&DVRK_Bridge::loop, this)));
     _start_pubs = false;
-    sleep(1);
-    aspin->start();
+    _on = true;
+//    sleep(1);
     scale = 0.1;
 }
 
@@ -109,24 +106,27 @@ void DVRK_Bridge::gripper_angle_sub_cb(const std_msgs::Float32ConstPtr &pos){
     }
 }
 
-void DVRK_Bridge::timer_cb(const ros::TimerEvent& event){
-    cb_queue.callAvailable();
-    dvrk_rate->sleep();
-    if(_start_pubs == true){
-        switch (activeState) {
-        case DVRK_POSITION_JOINT:
-            joint_pub.publish(cmd_joint);
-            break;
-        case DVRK_POSITION_CARTESIAN:
-            pose_pub.publish(cmd_pose.pose);
-            break;
-        case DVRK_EFFORT_CARTESIAN:
-            force_pub.publish(cmd_wrench.wrench);
-            break;
-        default:
-            break;
+void DVRK_Bridge::loop(){
+    while (n->ok() && _on){
+        cb_queue.callAvailable();
+        rate->sleep();
+        if(_start_pubs == true){
+            switch (activeState) {
+            case DVRK_POSITION_JOINT:
+                joint_pub.publish(cmd_joint);
+                break;
+            case DVRK_POSITION_CARTESIAN:
+                pose_pub.publish(cmd_pose.pose);
+                break;
+            case DVRK_EFFORT_CARTESIAN:
+                force_pub.publish(cmd_wrench.wrench);
+                break;
+            default:
+                break;
+            }
         }
     }
+    std::cerr << "Loop thread exit" <<std::endl;
 }
 
 void DVRK_Bridge::set_cur_mode(const std::string &state, bool lock_ori){
@@ -176,6 +176,28 @@ bool DVRK_Bridge::_is_available(){
 
 }
 
+void DVRK_Bridge::get_arms_from_rostopics(std::vector<std::string> &arm_names){
+    ros::M_string s;
+    ros::init(s, "dvrk_arm_node");
+    if (ros::master::check()){
+        std::string armR, armL, checkR, checkL;
+        armR = "MTMR";
+        armL = "MTML";
+        checkR = std::string("/dvrk/" + armR + "/status");
+        checkL = std::string("/dvrk/" + armL + "/status");
+        ros::master::V_TopicInfo topics;
+        ros::master::getTopics(topics);
+        for(int i = 0 ; i < topics.size() ; i++){
+            if(strcmp(topics[i].name.c_str(), checkR.c_str()) == 0){
+                arm_names.push_back(armR);
+            }
+            if(strcmp(topics[i].name.c_str(), checkL.c_str()) == 0){
+                arm_names.push_back(armL);
+            }
+        }
+    }
+}
+
 bool DVRK_Bridge::_in_effort_mode(){
     if(_is_available()){
         if(strcmp(cur_state.data.c_str(), _m_effort_mode.c_str()) == 0){
@@ -210,15 +232,17 @@ bool DVRK_Bridge::_in_jnt_pos_mode(){
 }
 
 bool DVRK_Bridge::shutDown(){
-    ROS_WARN("Shutdown called");
-    cb_queue.clear();
-    aspin->stop();
+    _on = false;
     ros::shutdown();
+    usleep(100000);
+    loop_thread->interrupt();
+    loop_thread.reset();
+
+    std::cerr<<"Shutdown called and Turning Off"<<std::endl;
     return true;
 }
 
 DVRK_Bridge::~DVRK_Bridge(){
+    ros::shutdown();
     std::cerr << "DESTROYING DVRK_BRIDGE" << std::endl;
 }
-
-

@@ -1,5 +1,5 @@
 #include "dvrk_arm/Arm.h"
-DVRK_Arm::DVRK_Arm(const std::string &arm_name): DVRK_Bridge(arm_name){
+DVRK_Arm::DVRK_Arm(const std::string &arm_name){
     originFramePtr.reset(new Frame);
     eeFramePtr.reset(new Frame);
     afxdTipFramePtr.reset(new Frame);
@@ -10,12 +10,14 @@ DVRK_Arm::DVRK_Arm(const std::string &arm_name): DVRK_Bridge(arm_name){
     frameptrVec.push_back(eeFramePtr);
     frameptrVec.push_back(afxdTipFramePtr);
 
-    init();
-    poseConversion.assign_conversion_fcn(&DVRK_Arm::cisstPose_to_userTransform, this);
-    jointConversion.assign_conversion_fcn(&DVRK_Arm::cisstJoint_to_userJoint, this);
-    wrenchConversion.assign_conversion_fcn(&DVRK_Arm::cisstWrench_to_userWrench, this);
-    gripperPosConversion.assign_conversion_fcn(&DVRK_Arm::cisstGripper_to_userGripper, this);
+    m_bridge.reset(new DVRK_Bridge(arm_name));
+    m_bridge->poseConversion.assign_conversion_fcn(&DVRK_Arm::cisstPose_to_userTransform, this);
+    m_bridge->jointConversion.assign_conversion_fcn(&DVRK_Arm::cisstJoint_to_userJoint, this);
+    m_bridge->wrenchConversion.assign_conversion_fcn(&DVRK_Arm::cisstWrench_to_userWrench, this);
+    m_bridge->gripperPosConversion.assign_conversion_fcn(&DVRK_Arm::cisstGripper_to_userGripper, this);
     counter = 0;
+
+
 }
 
 void DVRK_Arm::init(){
@@ -279,19 +281,19 @@ bool DVRK_Arm::move_cp(tf::Transform &trans){
 }
 
 bool DVRK_Arm::is_gripper_pressed(){
-    return _gripper_closed;
+    return m_bridge->_gripper_closed;
 }
 
 bool DVRK_Arm::is_clutch_pressed(){
-    return _clutch_pressed;
+    return m_bridge->_clutch_pressed;
 }
 
 bool DVRK_Arm::is_coag_pressed(){
-    return _coag_pressed;
+    return m_bridge->_coag_pressed;
 }
 
 void DVRK_Arm::set_mode(const std::string &state, bool lock_wrench_ori){
-    set_cur_mode(state, lock_wrench_ori);
+    m_bridge->set_cur_mode(state, lock_wrench_ori);
 }
 
 void DVRK_Arm::move_arm_cartesian(tf::Transform trans){
@@ -302,7 +304,7 @@ void DVRK_Arm::move_arm_cartesian(tf::Transform trans){
     cmd_pose.pose.position.z = trans.getOrigin().getZ();
     tf::quaternionTFToMsg(trans.getRotation().normalized(), cmd_pose.pose.orientation);
 
-    set_cur_pose(cmd_pose);
+    m_bridge->set_cur_pose(cmd_pose);
 }
 
 bool DVRK_Arm::set_force(const double &fx, const double &fy, const double &fz){
@@ -335,7 +337,7 @@ bool DVRK_Arm::set_wrench(const double &fx,const double &fy,const double &fz,con
 }
 
 void DVRK_Arm::set_arm_wrench(tf::Vector3 &force, tf::Vector3 &moment){
-    if(_clutch_pressed == true){
+    if(m_bridge->_clutch_pressed == true){
         force.setZero();
         moment.setZero();
     }
@@ -343,11 +345,7 @@ void DVRK_Arm::set_arm_wrench(tf::Vector3 &force, tf::Vector3 &moment){
     geometry_msgs::Wrench cmd_wrench;
     tf::vector3TFToMsg(originFramePtr->rot_mat * force, cmd_wrench.force);
     tf::vector3TFToMsg(originFramePtr->rot_mat * moment, cmd_wrench.torque);
-    //ROS_INFO("Ori F %f %f %f", force.x(),force.y(),force.z());
-    //ROS_INFO("Ori M %f %f %f", moment.x(),moment.y(),moment.z());
-    //ROS_INFO("Cmd F %f %f %f", cmd_wrench.force.x,cmd_wrench.force.y,cmd_wrench.force.z);
-    //ROS_INFO("Cmd M %f %f %f", cmd_wrench.torque.x,cmd_wrench.torque.y,cmd_wrench.torque.z);
-    set_cur_wrench(cmd_wrench);
+    m_bridge->set_cur_wrench(cmd_wrench);
 }
 
 void DVRK_Arm::handle_frames(){
@@ -362,13 +360,13 @@ void DVRK_Arm::handle_frames(){
         qy = (*frameIter)->trans.getRotation().getY();
         qz = (*frameIter)->trans.getRotation().getZ();
         qw = (*frameIter)->trans.getRotation().getW();
-        if (isnan(x) || isnan(y) ||  isnan(z)){
+        if (std::isnan(x) || std::isnan(y) ||  std::isnan(z)){
             (*frameIter)->trans.setOrigin(tf::Vector3(0,0,0));
-            ROS_ERROR("Origin of frame is NAN, setting origin to (0,0,0)");
+            std::cerr<< "Origin of frame is NAN, setting origin to (0,0,0)" << std::endl;
         }
-        if (isnan(qx) || isnan(qy) ||  isnan(qz) || isnan(qw)){
+        if (std::isnan(qx) || std::isnan(qy) ||  std::isnan(qz) || std::isnan(qw)){
             (*frameIter)->trans.setRotation(tf::Quaternion().getIdentity());
-            ROS_ERROR("Rotation of frame is NAN, setting rotation to (0,0,0)");
+            std::cerr<< "Rotation of frame is NAN, setting rotation to (0,0,0)" << std::endl;
         }
         //Normalize the rotation quaternion;
         (*frameIter)->trans.getRotation() = (*frameIter)->trans.getRotation().normalized();
@@ -379,10 +377,15 @@ void DVRK_Arm::handle_frames(){
     }
     counter++;
     if (counter % 15 == 0){
-    frame_broadcaster.sendTransform(tf::StampedTransform(originFramePtr->trans, ros::Time::now(), "world", "arm_origin"));
-    frame_broadcaster.sendTransform(tf::StampedTransform(eeFramePtr->trans, ros::Time::now(), "arm_origin", "ee"));
+//    frame_broadcaster.sendTransform(tf::StampedTransform(originFramePtr->trans, ros::Time::now(), "world", "arm_origin"));
+//    frame_broadcaster.sendTransform(tf::StampedTransform(eeFramePtr->trans, ros::Time::now(), "arm_origin", "ee"));
     counter = 0;
     }
+}
+
+bool DVRK_Arm::close(){
+    m_bridge->shutDown();
+    return true;
 }
 
 DVRK_Arm::~DVRK_Arm(){
@@ -391,10 +394,15 @@ DVRK_Arm::~DVRK_Arm(){
 
 
 extern "C"{
-DVRK_Arm* create(std::string arm_name){
-    return new DVRK_Arm(arm_name);
+std::vector<std::string> get_active_arms(){
+    std::vector<std::string> active_arm_names;
+    DVRK_Bridge::get_arms_from_rostopics(active_arm_names);
+    return active_arm_names;
 }
-void destroy(DVRK_Arm* arm_obj){
-    delete arm_obj;
+boost::shared_ptr<DVRK_Arm> create(std::string arm_name){
+    return boost::shared_ptr<DVRK_Arm>(new DVRK_Arm(arm_name));
+}
+void destroy(boost::shared_ptr<DVRK_Arm> arm_obj){
+    arm_obj.reset();
 }
 }

@@ -3,7 +3,7 @@
 DVRK_Console::DVRK_Console(){
 }
 
-void DVRK_Console::init(ros::NodeHandle *n){
+void DVRK_Console::init_console(ros::NodeHandle *n){
 }
 
 DVRK_Console::~DVRK_Console(){

@@ -18,6 +18,7 @@
 #include "dvrk_arm/States.h"
 #include "Conversion.h"
 #include "dvrk_arm/Timing.h"
+#include "boost/thread.hpp"
 
 class DVRK_Bridge: public States, public DVRK_FootPedals{
 public:
@@ -37,12 +38,13 @@ public:
     bool _in_cart_pos_mode();
     bool _in_jnt_pos_mode();
 
+    static void get_arms_from_rostopics(std::vector<std::string> &arm_names);
+
     bool _start_pubs;
     bool _gripper_closed;
 
     typedef boost::shared_ptr<ros::NodeHandle> NodePtr;
     typedef boost::shared_ptr<ros::Rate> RatePtr;
-    typedef boost::shared_ptr<ros::DVRK_Rate> DvrkRatePtr;
     typedef boost::shared_ptr<ros::AsyncSpinner> AspinPtr;
 
     bool shutDown();
@@ -55,7 +57,7 @@ public:
 private:
     std::string arm_name;
 
-    NodePtr n, nTimer;
+    NodePtr n;
     ros::Publisher force_pub;
     ros::Publisher force_orientation_lock_pub;
     ros::Publisher state_pub;
@@ -68,11 +70,8 @@ private:
     ros::Subscriber wrench_sub;
     ros::Subscriber gripper_sub;
     ros::Subscriber gripper_angle_sub;
-    ros::CallbackQueue cb_queue, cb_queue_timer;
-    ros::Timer timer;
-    AspinPtr aspin;
+    ros::CallbackQueue cb_queue;
     RatePtr rate;
-    DvrkRatePtr dvrk_rate;
     int _freq;
 
     double scale;
@@ -86,11 +85,14 @@ private:
     void gripper_angle_sub_cb(const std_msgs::Float32ConstPtr &pos);
     void timer_cb(const ros::TimerEvent&);
     void _rate_sleep();
+    void loop();
+    boost::shared_ptr<boost::thread> loop_thread;
 
     geometry_msgs::PoseStamped cur_pose, pre_pose, cmd_pose;
     sensor_msgs::JointState cur_joint, pre_joint, cmd_joint;
     std_msgs::String cur_state, state_cmd;
     geometry_msgs::WrenchStamped cur_wrench, cmd_wrench;
+    bool _on;
 };
 
 #endif

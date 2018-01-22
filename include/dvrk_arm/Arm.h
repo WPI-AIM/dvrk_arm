@@ -7,6 +7,7 @@
 #include "boost/shared_ptr.hpp"
 #include "dvrk_arm/Frame.h"
 #include "tf/transform_broadcaster.h"
+#include <cmath>
 
 struct Command: public Frame{
 public:
@@ -20,7 +21,7 @@ public:
 };
 
 
-class DVRK_Arm: public DVRK_Bridge{
+class DVRK_Arm: public States{
 public:
     DVRK_Arm(const std::string &arm_name);
     ~DVRK_Arm();
@@ -89,6 +90,16 @@ public:
 
     void set_mode(const std::string &state, bool lock_wrench_ori = true);
 
+    bool _is_available(){return true;}
+    bool _in_effort_mode(){return true;}
+    bool _in_cart_pos_mode(){return true;}
+    bool _in_jnt_pos_mode(){return m_bridge->_in_jnt_pos_mode();}
+
+    bool start_pubs;
+    bool gripper_closed;
+
+    bool close();
+
 private:
 
     void init();
@@ -107,9 +118,11 @@ private:
     Command eeCmd;
     std::vector<FramePtr> frameptrVec;
     std::vector<FramePtr>::iterator frameIter;
-    tf::TransformBroadcaster frame_broadcaster;
+//    boost::shared_ptr<tf::TransformBroadcaster> frame_broadcasterPtr;
     double gripper_angle;
     int counter;
+
+    boost::shared_ptr<DVRK_Bridge> m_bridge;
 
 };
 #endif
