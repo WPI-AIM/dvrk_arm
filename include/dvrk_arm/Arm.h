@@ -105,7 +105,7 @@ private:
     void init();
     void handle_frames();
     void cisstPose_to_userTransform(const geometry_msgs::PoseStamped &pose);
-    void cisstGripper_to_userGripper(const std_msgs::Float32 &pos);
+    void cisstGripper_to_userGripper(const sensor_msgs::JointState &state);
     void cisstJoint_to_userJoint(const sensor_msgs::JointState &jnt);
     void cisstWrench_to_userWrench(const geometry_msgs::WrenchStamped &wrench);
     void userPose_to_cisstPose(geometry_msgs::PoseStamped &pose);

@@ -52,7 +52,7 @@ public:
     Conversion<const geometry_msgs::PoseStamped&> poseConversion;
     Conversion<const sensor_msgs::JointState&> jointConversion;
     Conversion<const geometry_msgs::WrenchStamped&> wrenchConversion;
-    Conversion<const std_msgs::Float32&> gripperPosConversion;
+    Conversion<const sensor_msgs::JointState&> gripperPosConversion;
 
 private:
     std::string arm_name;
@@ -82,7 +82,7 @@ private:
     void joint_sub_cb(const sensor_msgs::JointStateConstPtr &msg);
     void wrench_sub_cb(const geometry_msgs::WrenchStampedConstPtr &wrench);
     void gripper_sub_cb(const std_msgs::BoolConstPtr &gripper);
-    void gripper_angle_sub_cb(const std_msgs::Float32ConstPtr &pos);
+    void gripper_state_sub_cb(const sensor_msgs::JointStateConstPtr &state);
     void timer_cb(const ros::TimerEvent&);
     void _rate_sleep();
     void run();

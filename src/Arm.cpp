@@ -35,8 +35,8 @@ void DVRK_Arm::cisstPose_to_userTransform(const geometry_msgs::PoseStamped &pose
     handle_frames();
 }
 
-void DVRK_Arm::cisstGripper_to_userGripper(const std_msgs::Float32 &pos){
-    gripper_angle = pos.data;
+void DVRK_Arm::cisstGripper_to_userGripper(const sensor_msgs::JointState &state){
+    gripper_angle = state.position[0];
 }
 
 void DVRK_Arm::cisstJoint_to_userJoint(const sensor_msgs::JointState &jnt){
