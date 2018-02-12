@@ -146,16 +146,19 @@ void DVRK_Bridge::set_cur_mode(const std::string &state, bool lock_ori){
 
 void DVRK_Bridge::set_cur_pose(const geometry_msgs::PoseStamped &pose){
     cmd_pose = pose;
+    activeState = DVRK_POSITION_CARTESIAN;
     _start_pubs = true;
 }
 
 void DVRK_Bridge::set_cur_wrench(const geometry_msgs::Wrench &wrench){
     cmd_wrench.wrench = wrench;
+    activeState = DVRK_EFFORT_CARTESIAN;
     _start_pubs = true;
 }
 
 void DVRK_Bridge::set_cur_joint(const sensor_msgs::JointState &jnt_state){
     cmd_joint = jnt_state;
+    activeState = DVRK_POSITION_JOINT;
     _start_pubs = true;
 }
 
