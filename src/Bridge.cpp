@@ -164,9 +164,7 @@ void DVRK_Bridge::_rate_sleep(){
 }
 
 bool DVRK_Bridge::_is_available(){
-    if (state_pub.getNumSubscribers() > 0 && state_sub.getNumPublishers() > 0 && pose_sub.getNumPublishers() > 0){
-        // If there are listeners to the state_publisher and pose publisher and subscribers to state msg, most likely the Arm is available
-        // Doing 3 seperate topic checks for redundancy
+    if (pose_sub.getNumPublishers() > 0){
         return true;
     }
     else{
