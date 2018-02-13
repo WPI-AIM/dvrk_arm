@@ -16,7 +16,7 @@
 #include "boost/function.hpp"
 #include "ros/callback_queue.h"
 #include "dvrk_arm/States.h"
-#include "Conversion.h"
+#include "FcnHandle.h"
 #include "dvrk_arm/Timing.h"
 #include "boost/thread.hpp"
 
@@ -49,10 +49,10 @@ public:
 
     bool shutDown();
 
-    Conversion<const geometry_msgs::PoseStamped&> poseConversion;
-    Conversion<const sensor_msgs::JointState&> jointConversion;
-    Conversion<const geometry_msgs::WrenchStamped&> wrenchConversion;
-    Conversion<const sensor_msgs::JointState&> gripperPosConversion;
+    FcnHandle<const geometry_msgs::PoseStamped&> poseFcnHandle;
+    FcnHandle<const sensor_msgs::JointState&> jointFcnHandle;
+    FcnHandle<const geometry_msgs::WrenchStamped&> wrenchFcnHandle;
+    FcnHandle<const sensor_msgs::JointState&> gripperFcnHandle;
 
 private:
     std::string arm_name;

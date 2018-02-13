@@ -5,13 +5,13 @@
 #include <boost/bind.hpp>
 
 template<typename D>
-class Conversion{
+class FcnHandle{
 public:
-    Conversion():_is_set(false){}
-    ~Conversion(){}
+    FcnHandle():_is_set(false){}
+    ~FcnHandle(){}
 
     template<typename C>
-    void assign_conversion_fcn(void (C::*conversion_fcn)(D), C *obj){
+    void assign_fcn(void (C::*conversion_fcn)(D), C *obj){
         fcn_handle = boost::bind(conversion_fcn, obj, _1);
         _is_set = true;
     }

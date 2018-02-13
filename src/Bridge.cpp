@@ -67,23 +67,23 @@ void DVRK_Bridge::init(){
 void DVRK_Bridge::joint_sub_cb(const sensor_msgs::JointStateConstPtr &msg){
     pre_joint = cur_joint;
     cur_joint = *msg;
-    if(jointConversion._is_set){
-        jointConversion.fcn_handle(cur_joint);
+    if(jointFcnHandle._is_set){
+        jointFcnHandle.fcn_handle(cur_joint);
     }
 }
 
 void DVRK_Bridge::pose_sub_cb(const geometry_msgs::PoseStampedConstPtr &msg){
     pre_pose = cur_pose;
     cur_pose = *msg;
-    if(poseConversion._is_set){
-        poseConversion.fcn_handle(cur_pose);
+    if(poseFcnHandle._is_set){
+        poseFcnHandle.fcn_handle(cur_pose);
     }
 }
 
 void DVRK_Bridge::wrench_sub_cb(const geometry_msgs::WrenchStampedConstPtr &msg){
     cur_wrench = *msg;
-    if(wrenchConversion._is_set){
-        wrenchConversion.fcn_handle(cur_wrench);
+    if(wrenchFcnHandle._is_set){
+        wrenchFcnHandle.fcn_handle(cur_wrench);
     }
 }
 
@@ -101,8 +101,8 @@ void DVRK_Bridge::gripper_sub_cb(const std_msgs::BoolConstPtr &gripper){
 }
 
 void DVRK_Bridge::gripper_state_sub_cb(const sensor_msgs::JointStateConstPtr &state){
-    if(gripperPosConversion._is_set){
-        gripperPosConversion.fcn_handle(*state);
+    if(gripperFcnHandle._is_set){
+        gripperFcnHandle.fcn_handle(*state);
     }
 }
 

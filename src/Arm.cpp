@@ -11,17 +11,17 @@ DVRK_Arm::DVRK_Arm(const std::string &arm_name){
     frameptrVec.push_back(afxdTipFramePtr);
 
     m_bridge.reset(new DVRK_Bridge(arm_name));
-    m_bridge->poseConversion.assign_conversion_fcn(&DVRK_Arm::cisstPose_to_userTransform, this);
-    m_bridge->jointConversion.assign_conversion_fcn(&DVRK_Arm::cisstJoint_to_userJoint, this);
-    m_bridge->wrenchConversion.assign_conversion_fcn(&DVRK_Arm::cisstWrench_to_userWrench, this);
-    m_bridge->gripperPosConversion.assign_conversion_fcn(&DVRK_Arm::cisstGripper_to_userGripper, this);
+    m_bridge->poseFcnHandle.assign_fcn(&DVRK_Arm::pose_fcn_cb, this);
+    m_bridge->jointFcnHandle.assign_fcn(&DVRK_Arm::joint_state_fcn_cb, this);
+    m_bridge->wrenchFcnHandle.assign_fcn(&DVRK_Arm::wrench_fcn_cb, this);
+    m_bridge->gripperFcnHandle.assign_fcn(&DVRK_Arm::gripper_state_fcn_cb, this);
     counter = 0;
 }
 
 void DVRK_Arm::init(){
 }
 
-void DVRK_Arm::cisstPose_to_userTransform(const geometry_msgs::PoseStamped &pose){
+void DVRK_Arm::pose_fcn_cb(const geometry_msgs::PoseStamped &pose){
     freeFramePtr->pos.setX(pose.pose.position.x);
     freeFramePtr->pos.setY(pose.pose.position.y);
     freeFramePtr->pos.setZ(pose.pose.position.z);
@@ -35,15 +35,15 @@ void DVRK_Arm::cisstPose_to_userTransform(const geometry_msgs::PoseStamped &pose
     handle_frames();
 }
 
-void DVRK_Arm::cisstGripper_to_userGripper(const sensor_msgs::JointState &state){
+void DVRK_Arm::gripper_state_fcn_cb(const sensor_msgs::JointState &state){
     gripper_angle = state.position[0];
 }
 
-void DVRK_Arm::cisstJoint_to_userJoint(const sensor_msgs::JointState &jnt){
+void DVRK_Arm::joint_state_fcn_cb(const sensor_msgs::JointState &jnt){
 
 }
 
-void DVRK_Arm::cisstWrench_to_userWrench(const geometry_msgs::WrenchStamped &wrench){
+void DVRK_Arm::wrench_fcn_cb(const geometry_msgs::WrenchStamped &wrench){
 
 }
 

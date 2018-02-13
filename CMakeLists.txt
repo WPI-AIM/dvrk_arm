@@ -138,7 +138,7 @@ set(HDR_FILES
    include/${PROJECT_NAME}/FootPedals.h
    include/${PROJECT_NAME}/Frame.h
    include/${PROJECT_NAME}/States.h
-   include/${PROJECT_NAME}/Conversion.h
+   include/${PROJECT_NAME}/FcnHandle.h
    include/${PROJECT_NAME}/Timing.h
 )
 
