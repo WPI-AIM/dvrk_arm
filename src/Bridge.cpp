@@ -33,7 +33,8 @@ void DVRK_Bridge::init(){
     ros::init(s, arm_name + "_interface_node");
     n.reset(new ros::NodeHandle);
     n->setCallbackQueue(&cb_queue);
-    rate.reset(new ros::Rate(1000));
+    run_loop_rate.reset(new ros::Rate(1000));
+    wrench_loop_max_rate.reset(new ros::Rate(1000));
 
     pose_sub = n->subscribe("/dvrk/" + arm_name + "/position_cartesian_current", 10, &DVRK_Bridge::pose_sub_cb, this);
     state_sub = n->subscribe("/dvrk/" + arm_name + "/robot_state", 10, &DVRK_Bridge::state_sub_cb, this);
@@ -109,7 +110,7 @@ void DVRK_Bridge::gripper_state_sub_cb(const sensor_msgs::JointStateConstPtr &st
 void DVRK_Bridge::run(){
     while (n->ok() && _on){
         cb_queue.callAvailable();
-        rate->sleep();
+        run_loop_rate->sleep();
         if(_start_pubs == true){
             switch (activeState) {
             case DVRK_POSITION_JOINT:
@@ -138,7 +139,7 @@ void DVRK_Bridge::set_cur_mode(const std::string &state, bool lock_ori){
                 lock.data = lock_ori;
                 force_orientation_lock_pub.publish(lock);
             }
-            _rate_sleep();
+            usleep(100000);
         }
     }
     _start_pubs = false;
@@ -154,6 +155,7 @@ void DVRK_Bridge::set_cur_wrench(const geometry_msgs::Wrench &wrench){
     cmd_wrench.wrench = wrench;
     activeState = DVRK_EFFORT_CARTESIAN;
     _start_pubs = true;
+    wrench_loop_max_rate->sleep();
 }
 
 void DVRK_Bridge::set_cur_joint(const sensor_msgs::JointState &jnt_state){
@@ -163,7 +165,7 @@ void DVRK_Bridge::set_cur_joint(const sensor_msgs::JointState &jnt_state){
 }
 
 void DVRK_Bridge::_rate_sleep(){
-    rate->sleep();
+    run_loop_rate->sleep();
 }
 
 bool DVRK_Bridge::_is_available(){

@@ -71,7 +71,7 @@ private:
     ros::Subscriber gripper_sub;
     ros::Subscriber gripper_angle_sub;
     ros::CallbackQueue cb_queue;
-    RatePtr rate;
+    RatePtr run_loop_rate, wrench_loop_max_rate;
     int _freq;
 
     double scale;
