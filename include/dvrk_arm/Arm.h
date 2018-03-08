@@ -123,6 +123,6 @@ private:
     int counter;
 
     boost::shared_ptr<DVRK_Bridge> m_bridge;
-
+    boost::mutex m_mutex;
 };
 #endif
