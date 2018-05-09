@@ -30,46 +30,48 @@ the values w.r.t to the frames you set.
 
 ### Conversion Function
 The class **DVRK_Bridge** handles all the ros-communication.**DVRK_Bridge** currently accepts Pose, Joint and Wrench member-function pointers that exposes data retrieved from the manipulator to DVRK_Arm class.
-
-    //Function Signature (const geometry_msgs::PoseStamed&)
-    poseConversion.assign_conversion_fcn(&DVRK_Arm::cisstPose_to_userTransform, this);
-    //Function Signature (const sensor_msgs::JointState&)
-    jointConversion.assign_conversion_fcn(&DVRK_Arm::cisstJoint_to_userJoint, this);
-    //Function Signature (const geometry_msgs::WrenchStamed&)
-    wrenchConversion.assign_conversion_fcn(&DVRK_Arm::cisstPose_to_userWrench, this);
-    
+``` c++
+//Function Signature (const geometry_msgs::PoseStamed&)
+poseConversion.assign_conversion_fcn(&DVRK_Arm::pose_fcn_cb, this);
+//Function Signature (const sensor_msgs::JointState&)
+jointConversion.assign_conversion_fcn(&DVRK_Arm::joint_state_fcn_cb, this);
+//Function Signature (const geometry_msgs::WrenchStamed&)
+wrenchConversion.assign_conversion_fcn(&DVRK_Arm::wrench_fcn_cb, this);
+ ```   
 The class **Conversion** is templated to allow more data-types to be incorporated with ease.
     
 #### IMPORTANT
 While setting just the position of **Origin Tranfrom** or **Tip Transform**, the orientation is not altered, it remains whatever it was set before, or if it wasn't set before, it remains identity matrix. Likewise, when the only the orientation is set, the position remains un-altered.
 
 ### Using the library (Example)
-    DVRK_Arm arm("MTMR");
-    sleep(1);
-    arm.set_mode(arm._m_effort_mode);
-    sleep(1);
-    arm.set_force(1,0,0);
-    double x,y,z;
-    arm.get_position(x,y,z);
-    arm.set_mode(arm._m_cart_pos_mode);
-    sleep(1);
-    arm.move_cp_pos(-0.5,-0.25,-0.3);
-    
-    //Check if arm is available
-    
-    bool check = arm._is_available();
-    
+```c++
+DVRK_Arm arm("MTMR");
+sleep(1);
+// The set_mode method was previously used to set the desired robot mode. It's deprecated now
+arm.set_mode(arm._m_effort_mode);
+sleep(1);
+arm.set_force(1,0,0);
+double x,y,z;
+arm.get_position(x,y,z);
+arm.set_mode(arm._m_cart_pos_mode);
+sleep(1);
+arm.move_cp_pos(-0.5,-0.25,-0.3);   
+//Check if arm is available
+bool check = arm._is_available();
+ ```   
 ### Setting Origin and Tip Frames
-    DVRK_Arm arm("MTML");
-    // Lets say we want to know what the current Transform between tip and origin is
-    tf::Transform ee_tran_cur;
-    arm.measured_cp(ee_tran_cur);
-    // Now, we might want the origin trans to be placed at the tip, so all position and angular
-    // offsets are zero. Just take the cur_trans and set it as the origin trans;
-    arm.set_origin_frame(ee_tran_cur);
-    // Now, lets say, we want the EE trans to be orientated differently.
-    tf::Quaternion tip_quat;
-    tip_quat.setRPY(0, M_PI/2, 0);
-    arm.affix_tip_frame_rot(tip_quat);
-    // We can also move the tip frame anywhere we want.
-    arm.affix_tip_frame_pos(-1,0,2);
+```c++
+DVRK_Arm arm("MTML");
+// Lets say we want to know what the current Transform between tip and origin is
+tf::Transform ee_tran_cur;
+arm.measured_cp(ee_tran_cur);
+// Now, we might want the origin trans to be placed at the tip, so all position and angular
+// offsets are zero. Just take the cur_trans and set it as the origin trans;
+arm.set_origin_frame(ee_tran_cur);
+// Now, lets say, we want the EE trans to be orientated differently.
+tf::Quaternion tip_quat;
+tip_quat.setRPY(0, M_PI/2, 0);
+arm.affix_tip_frame_rot(tip_quat);
+// We can also move the tip frame anywhere we want.
+arm.affix_tip_frame_pos(-1,0,2);
+```
