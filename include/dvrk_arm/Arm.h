@@ -81,6 +81,9 @@ public:
 
     void measured_cp(geometry_msgs::Pose &pose);
     void measured_cp(tf::Transform &trans);
+    void measured_cf_force(double &fx, double &fy, double &fz);
+    void measured_cf_moment(double &nx, double &ny, double &nz);
+    void measured_cf(double &fx, double &fy, double &fz, double &nx, double &ny, double &nz);
 
     void measured_jp(std::vector<double> &jnt_pos);
     void measured_jv(std::vector<double> &jnt_vel);
@@ -112,20 +115,20 @@ private:
     void gripper_state_fcn_cb(const sensor_msgs::JointState &state);
     void joint_state_fcn_cb(const sensor_msgs::JointState &jnt);
     void wrench_fcn_cb(const geometry_msgs::WrenchStamped &wrench);
-    void userPose_to_cisstPose(geometry_msgs::PoseStamped &pose);
     void move_arm_cartesian(tf::Transform trans);
     void set_arm_wrench(tf::Vector3 &force, tf::Vector3 &wrench);
     // afxdTipFrame is the affixedTipFrame;
 
     typedef boost::shared_ptr<Frame> FramePtr;
-    FramePtr originFramePtr, afxdTipFramePtr, eeFramePtr, freeFramePtr;
-    std::vector<double> jointPos, jointVel, jointEffort;
-    Command eeCmd;
-    std::vector<FramePtr> frameptrVec;
-    std::vector<FramePtr>::iterator frameIter;
+    FramePtr m_originFramePtr, m_afxdTipFramePtr, m_eeFramePtr, m_freeFramePtr;
+    tf::Vector3 m_wrenchForce, m_wrenchMoment;
+    std::vector<double> m_jointPos, m_jointVel, m_jointEffort;
+    Command m_eeCmd;
+    std::vector<FramePtr> m_frameptrVec;
+    std::vector<FramePtr>::iterator m_frameIter;
 //    boost::shared_ptr<tf::TransformBroadcaster> frame_broadcasterPtr;
-    double gripper_angle;
-    int counter;
+    double m_gripper_angle;
+    int m_counter;
 
     boost::shared_ptr<DVRK_Bridge> m_bridge;
     boost::mutex m_mutex;
