@@ -140,7 +140,7 @@ set(HDR_FILES
    include/${PROJECT_NAME}/States.h
    include/${PROJECT_NAME}/FcnHandle.h
    include/${PROJECT_NAME}/Timing.h
-)
+        tests/arm_test.cpp)
 
 ## Declare a C++ library
  add_library(dvrk_arm
@@ -154,7 +154,7 @@ set(HDR_FILES
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
-# add_executable(${PROJECT_NAME}_node src/dvrk_arms_node.cpp)
+ add_executable(${PROJECT_NAME}_test tests/arm_test.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -170,6 +170,9 @@ set(HDR_FILES
  target_link_libraries(dvrk_arm
    ${catkin_LIBRARIES}
  )
+ target_link_libraries(${PROJECT_NAME}_test
+        dvrk_arm
+        )
 #############
 ## Install ##
 #############
