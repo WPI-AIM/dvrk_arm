@@ -60,8 +60,8 @@ void DVRK_Arm::wrench_fcn_cb(const geometry_msgs::WrenchStamped &wrench){
     boost::lock_guard<boost::mutex> lock(m_mutex);
     tf::vector3MsgToTF(wrench.wrench.force, m_wrenchForce);
     tf::vector3MsgToTF(wrench.wrench.torque, m_wrenchMoment);
-    m_wrenchForce = m_eeFramePtr->rot_mat.inverse() * m_wrenchForce;
-    m_wrenchMoment = m_eeFramePtr->rot_mat.inverse() * m_wrenchMoment;
+    m_wrenchForce  = m_originFramePtr->rot_mat.inverse() * m_wrenchForce;
+    m_wrenchMoment = m_originFramePtr->rot_mat.inverse() * m_wrenchMoment;
 }
 
 void DVRK_Arm::set_origin_frame(const tf::Vector3 &pos, const tf::Matrix3x3 &tf_mat){
