@@ -41,7 +41,19 @@ void DVRK_Arm::gripper_state_fcn_cb(const sensor_msgs::JointState &state){
 }
 
 void DVRK_Arm::joint_state_fcn_cb(const sensor_msgs::JointState &jnt){
-
+    boost::lock_guard<boost::mutex> lock(m_mutex);
+    if (jointPos.size() != jnt.position.size()){
+        jointPos.resize(jnt.position.size());
+    }
+    if (jointVel.size() != jnt.velocity.size()){
+        jointVel.resize(jnt.velocity.size());
+    }
+    if (jointEffort.size() != jnt.effort.size()){
+        jointEffort.resize(jnt.effort.size());
+    }
+    jointPos = jnt.position;
+    jointVel = jnt.velocity;
+    jointEffort = jnt.effort;
 }
 
 void DVRK_Arm::wrench_fcn_cb(const geometry_msgs::WrenchStamped &wrench){
@@ -224,6 +236,30 @@ void DVRK_Arm::measured_cp(tf::Transform &trans){
     boost::lock_guard<boost::mutex> lock(m_mutex);
     trans = eeFramePtr->trans;
     trans.setRotation(trans.getRotation().normalized());
+}
+
+void DVRK_Arm::measured_jp(std::vector<double> &jnt_pos) {
+    boost::lock_guard<boost::mutex> lock(m_mutex);
+    if (jnt_pos.size() != jointPos.size()){
+        jnt_pos.resize(jointPos.size());
+    }
+    jnt_pos = jointPos;
+}
+
+void DVRK_Arm::measured_jv(std::vector<double> &jnt_vel) {
+    boost::lock_guard<boost::mutex> lock(m_mutex);
+    if (jnt_vel.size() != jointVel.size()){
+        jnt_vel.resize(jointVel.size());
+    }
+    jnt_vel = jointPos;
+}
+
+void DVRK_Arm::measured_jf(std::vector<double> &jnt_effort) {
+    boost::lock_guard<boost::mutex> lock(m_mutex);
+    if (jnt_effort.size() != jointEffort.size()){
+        jnt_effort.resize(jointEffort.size());
+    }
+    jnt_effort = jointPos;
 }
 
 void DVRK_Arm::measured_gripper_angle(double &pos){

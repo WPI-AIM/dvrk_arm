@@ -38,7 +38,7 @@ void DVRK_Bridge::init(){
 
     pose_sub = n->subscribe("/dvrk/" + arm_name + "/position_cartesian_current", 10, &DVRK_Bridge::pose_sub_cb, this);
     state_sub = n->subscribe("/dvrk/" + arm_name + "/robot_state", 10, &DVRK_Bridge::state_sub_cb, this);
-    joint_sub = n->subscribe("/dvrk/" + arm_name + "/position_joint_current", 10, &DVRK_Bridge::joint_sub_cb, this);
+    joint_sub = n->subscribe("/dvrk/" + arm_name + "/state_joint_current", 10, &DVRK_Bridge::joint_sub_cb, this);
     wrench_sub = n->subscribe("/dvrk/" + arm_name + "/wrench_body_current", 10, &DVRK_Bridge::wrench_sub_cb, this);
     gripper_sub = n->subscribe("/dvrk/" + arm_name + "/gripper_closed_event", 10, &DVRK_Bridge::gripper_sub_cb, this);
     gripper_angle_sub = n->subscribe("/dvrk/" + arm_name + "/state_gripper_current", 10, &DVRK_Bridge::gripper_state_sub_cb, this);

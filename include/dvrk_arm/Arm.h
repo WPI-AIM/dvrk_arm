@@ -82,6 +82,10 @@ public:
     void measured_cp(geometry_msgs::Pose &pose);
     void measured_cp(tf::Transform &trans);
 
+    void measured_jp(std::vector<double> &jnt_pos);
+    void measured_jv(std::vector<double> &jnt_vel);
+    void measured_jf(std::vector<double> &jnt_effort);
+
     void measured_gripper_angle(double &pos);
 
     bool is_gripper_pressed(); //Presed or Released, for MTM
@@ -115,6 +119,7 @@ private:
 
     typedef boost::shared_ptr<Frame> FramePtr;
     FramePtr originFramePtr, afxdTipFramePtr, eeFramePtr, freeFramePtr;
+    std::vector<double> jointPos, jointVel, jointEffort;
     Command eeCmd;
     std::vector<FramePtr> frameptrVec;
     std::vector<FramePtr>::iterator frameIter;
