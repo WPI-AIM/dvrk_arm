@@ -17,6 +17,8 @@ find_package(catkin REQUIRED COMPONENTS
   tf
 )
 
+find_package(Eigen3 REQUIRED)
+
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
 
@@ -121,7 +123,7 @@ catkin_package(
 ## Your package locations should be listed before other locations
 include_directories(
   include
-  ${catkin_INCLUDE_DIRS}
+  ${catkin_INCLUDE_DIRS} ${EIGEN_INCLUDE_DIRS}
 )
 
 set(SRC_FILES
@@ -139,8 +141,7 @@ set(HDR_FILES
    include/${PROJECT_NAME}/Frame.h
    include/${PROJECT_NAME}/States.h
    include/${PROJECT_NAME}/FcnHandle.h
-   include/${PROJECT_NAME}/Timing.h
-        tests/arm_test.cpp)
+   include/${PROJECT_NAME}/Timing.h)
 
 ## Declare a C++ library
  add_library(dvrk_arm
@@ -155,6 +156,8 @@ set(HDR_FILES
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
  add_executable(${PROJECT_NAME}_test tests/arm_test.cpp)
+
+ add_executable(interpolate_test src/Interpolate.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
