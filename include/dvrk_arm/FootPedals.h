@@ -52,7 +52,7 @@ class DVRK_FootPedals{
     friend class DVRK_Arm;
     DVRK_FootPedals();
     ~DVRK_FootPedals();
-    void init_footpedals(boost::shared_ptr<ros::NodeHandle> n);
+    void init_footpedals(std::shared_ptr<ros::NodeHandle> n);
     bool _clutch_pressed, _coag_pressed;
 private:
     ros::Subscriber clutch_sub, coag_sub;

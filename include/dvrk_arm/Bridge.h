@@ -85,9 +85,9 @@ public:
     bool _start_pubs;
     bool _gripper_closed;
 
-    typedef boost::shared_ptr<ros::NodeHandle> NodePtr;
-    typedef boost::shared_ptr<ros::Rate> RatePtr;
-    typedef boost::shared_ptr<ros::AsyncSpinner> AspinPtr;
+    typedef std::shared_ptr<ros::NodeHandle> NodePtr;
+    typedef std::shared_ptr<ros::Rate> RatePtr;
+    typedef std::shared_ptr<ros::AsyncSpinner> AspinPtr;
 
     bool shutDown();
 
@@ -128,7 +128,7 @@ private:
     void timer_cb(const ros::TimerEvent&);
     void _rate_sleep();
     void run();
-    boost::shared_ptr<boost::thread> loop_thread;
+    std::shared_ptr<boost::thread> loop_thread;
 
     geometry_msgs::PoseStamped cur_pose, pre_pose, cmd_pose;
     sensor_msgs::JointState cur_joint, pre_joint, cmd_joint;

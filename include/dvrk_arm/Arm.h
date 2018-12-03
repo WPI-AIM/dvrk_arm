@@ -46,7 +46,7 @@
 #include "Bridge.h"
 #include "tf/tf.h"
 #include "tf/LinearMath/Matrix3x3.h"
-#include "boost/shared_ptr.hpp"
+#include "mutex"
 #include "dvrk_arm/Frame.h"
 #include "tf/transform_broadcaster.h"
 #include <cmath>
@@ -161,7 +161,7 @@ private:
     void set_arm_wrench(tf::Vector3 &force, tf::Vector3 &wrench);
     // afxdTipFrame is the affixedTipFrame;
 
-    typedef boost::shared_ptr<Frame> FramePtr;
+    typedef std::shared_ptr<Frame> FramePtr;
     FramePtr m_originFramePtr, m_afxdTipFramePtr, m_eeFramePtr, m_freeFramePtr;
     tf::Vector3 m_wrenchForce, m_wrenchMoment;
     std::vector<double> m_jointPos, m_jointVel, m_jointEffort;
@@ -172,7 +172,7 @@ private:
     double m_gripper_angle;
     int m_counter;
 
-    boost::shared_ptr<DVRK_Bridge> m_bridge;
-    boost::mutex m_mutex;
+    std::shared_ptr<DVRK_Bridge> m_bridge;
+    std::mutex m_mutex;
 };
 #endif

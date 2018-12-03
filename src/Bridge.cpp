@@ -277,10 +277,10 @@ bool DVRK_Bridge::_in_jnt_pos_mode(){
 
 bool DVRK_Bridge::shutDown(){
     _on = false;
-    ros::shutdown();
+//    ros::shutdown();
     usleep(100000);
     loop_thread->interrupt();
-    loop_thread.reset();
+//    loop_thread.reset();
 
     std::cerr<<"Shutdown called for: "<< arm_name <<std::endl;
     return true;

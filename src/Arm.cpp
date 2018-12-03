@@ -64,7 +64,7 @@ void DVRK_Arm::init(){
 }
 
 void DVRK_Arm::pose_fcn_cb(const geometry_msgs::PoseStamped &pose){
-    boost::lock_guard<boost::mutex> lock(m_mutex);
+    std::lock_guard<std::mutex> lock(m_mutex);
     m_freeFramePtr->pos.setX(pose.pose.position.x);
     m_freeFramePtr->pos.setY(pose.pose.position.y);
     m_freeFramePtr->pos.setZ(pose.pose.position.z);
@@ -78,12 +78,12 @@ void DVRK_Arm::pose_fcn_cb(const geometry_msgs::PoseStamped &pose){
 }
 
 void DVRK_Arm::gripper_state_fcn_cb(const sensor_msgs::JointState &state){
-    boost::lock_guard<boost::mutex> lock(m_mutex);
+    std::lock_guard<std::mutex> lock(m_mutex);
     m_gripper_angle = state.position[0];
 }
 
 void DVRK_Arm::joint_state_fcn_cb(const sensor_msgs::JointState &jnt){
-    boost::lock_guard<boost::mutex> lock(m_mutex);
+    std::lock_guard<std::mutex> lock(m_mutex);
     if (m_jointPos.size() != jnt.position.size()){
         m_jointPos.resize(jnt.position.size());
     }
@@ -99,7 +99,7 @@ void DVRK_Arm::joint_state_fcn_cb(const sensor_msgs::JointState &jnt){
 }
 
 void DVRK_Arm::wrench_fcn_cb(const geometry_msgs::WrenchStamped &wrench){
-    boost::lock_guard<boost::mutex> lock(m_mutex);
+    std::lock_guard<std::mutex> lock(m_mutex);
     tf::vector3MsgToTF(wrench.wrench.force, m_wrenchForce);
     tf::vector3MsgToTF(wrench.wrench.torque, m_wrenchMoment);
     m_wrenchForce  = m_originFramePtr->rot_mat.inverse() * m_wrenchForce;
@@ -224,29 +224,29 @@ void DVRK_Arm::affix_tip_frame(const tf::Transform &trans){
 }
 
 void DVRK_Arm::measured_cp_pos(double &x, double &y, double &z){
-    boost::lock_guard<boost::mutex> lock(m_mutex);
+    std::lock_guard<std::mutex> lock(m_mutex);
     x = m_eeFramePtr->trans.getOrigin().getX();
     y = m_eeFramePtr->trans.getOrigin().getY();
     z = m_eeFramePtr->trans.getOrigin().getZ();
 }
 
 void DVRK_Arm::measured_cp_pos(tf::Vector3 &pos){
-    boost::lock_guard<boost::mutex> lock(m_mutex);
+    std::lock_guard<std::mutex> lock(m_mutex);
     pos = m_eeFramePtr->trans.getOrigin();
 }
 
 void DVRK_Arm::measured_cp_pos(geometry_msgs::Point &pos){
-    boost::lock_guard<boost::mutex> lock(m_mutex);
+    std::lock_guard<std::mutex> lock(m_mutex);
     tf::pointTFToMsg(m_eeFramePtr->trans.getOrigin(), pos);
 }
 
 void DVRK_Arm::measured_cp_ori(double &roll, double &pitch, double &yaw){
-    boost::lock_guard<boost::mutex> lock(m_mutex);
+    std::lock_guard<std::mutex> lock(m_mutex);
     tf::Matrix3x3(m_eeFramePtr->trans.getRotation()).getRPY(roll, pitch, yaw);
 }
 
 void DVRK_Arm::measured_cp_ori(double &x, double &y, double &z, double &w){
-    boost::lock_guard<boost::mutex> lock(m_mutex);
+    std::lock_guard<std::mutex> lock(m_mutex);
     x = m_eeFramePtr->trans.getRotation().getX();
     y = m_eeFramePtr->trans.getRotation().getY();
     z = m_eeFramePtr->trans.getRotation().getZ();
@@ -254,23 +254,23 @@ void DVRK_Arm::measured_cp_ori(double &x, double &y, double &z, double &w){
 }
 
 void DVRK_Arm::measured_cp_ori(tf::Quaternion &tf_quat){
-    boost::lock_guard<boost::mutex> lock(m_mutex);
+    std::lock_guard<std::mutex> lock(m_mutex);
     tf_quat = m_eeFramePtr->trans.getRotation();
     tf_quat.normalize();
 }
 
 void DVRK_Arm::measured_cp_ori(geometry_msgs::Quaternion &gm_quat){
-    boost::lock_guard<boost::mutex> lock(m_mutex);
+    std::lock_guard<std::mutex> lock(m_mutex);
     tf::quaternionTFToMsg(m_eeFramePtr->trans.getRotation(), gm_quat);
 }
 
 void DVRK_Arm::measured_cp_ori(tf::Matrix3x3 &mat){
-    boost::lock_guard<boost::mutex> lock(m_mutex);
+    std::lock_guard<std::mutex> lock(m_mutex);
     mat.setRotation(m_eeFramePtr->trans.getRotation());
 }
 
 void DVRK_Arm::measured_cp(geometry_msgs::Pose &pose){
-    boost::lock_guard<boost::mutex> lock(m_mutex);
+    std::lock_guard<std::mutex> lock(m_mutex);
     pose.position.x = m_eeFramePtr->trans.getOrigin().getX();
     pose.position.y = m_eeFramePtr->trans.getOrigin().getY();
     pose.position.z = m_eeFramePtr->trans.getOrigin().getZ();
@@ -279,20 +279,20 @@ void DVRK_Arm::measured_cp(geometry_msgs::Pose &pose){
 }
 
 void DVRK_Arm::measured_cp(tf::Transform &trans){
-    boost::lock_guard<boost::mutex> lock(m_mutex);
+    std::lock_guard<std::mutex> lock(m_mutex);
     trans = m_eeFramePtr->trans;
     trans.setRotation(trans.getRotation().normalized());
 }
 
 void DVRK_Arm::measured_cf_force(double &fx, double &fy, double &fz) {
-    boost::lock_guard<boost::mutex> lock(m_mutex);
+    std::lock_guard<std::mutex> lock(m_mutex);
     fx = m_wrenchForce.getX();
     fy = m_wrenchForce.getY();
     fz = m_wrenchForce.getZ();
 }
 
 void DVRK_Arm::measured_cf_moment(double &nx, double &ny, double &nz){
-    boost::lock_guard<boost::mutex> lock(m_mutex);
+    std::lock_guard<std::mutex> lock(m_mutex);
     nx = m_wrenchMoment.getX();
     ny = m_wrenchMoment.getY();
     nz = m_wrenchMoment.getZ();
@@ -304,7 +304,7 @@ void DVRK_Arm::measured_cf(double &fx, double &fy, double &fz, double &nx, doubl
 }
 
 void DVRK_Arm::measured_jp(std::vector<double> &jnt_pos) {
-    boost::lock_guard<boost::mutex> lock(m_mutex);
+    std::lock_guard<std::mutex> lock(m_mutex);
     if (jnt_pos.size() != m_jointPos.size()){
         jnt_pos.resize(m_jointPos.size());
     }
@@ -312,7 +312,7 @@ void DVRK_Arm::measured_jp(std::vector<double> &jnt_pos) {
 }
 
 void DVRK_Arm::measured_jv(std::vector<double> &jnt_vel) {
-    boost::lock_guard<boost::mutex> lock(m_mutex);
+    std::lock_guard<std::mutex> lock(m_mutex);
     if (jnt_vel.size() != m_jointVel.size()){
         jnt_vel.resize(m_jointVel.size());
     }
@@ -320,7 +320,7 @@ void DVRK_Arm::measured_jv(std::vector<double> &jnt_vel) {
 }
 
 void DVRK_Arm::measured_jf(std::vector<double> &jnt_effort) {
-    boost::lock_guard<boost::mutex> lock(m_mutex);
+    std::lock_guard<std::mutex> lock(m_mutex);
     if (jnt_effort.size() != m_jointEffort.size()){
         jnt_effort.resize(m_jointEffort.size());
     }
@@ -328,7 +328,7 @@ void DVRK_Arm::measured_jf(std::vector<double> &jnt_effort) {
 }
 
 void DVRK_Arm::measured_gripper_angle(double &pos){
-    boost::lock_guard<boost::mutex> lock(m_mutex);
+    std::lock_guard<std::mutex> lock(m_mutex);
     pos = m_gripper_angle;
 }
 
@@ -507,10 +507,10 @@ std::vector<std::string> get_active_arms(){
     DVRK_Bridge::get_arms_from_rostopics(active_arm_names);
     return active_arm_names;
 }
-boost::shared_ptr<DVRK_Arm> create(std::string arm_name){
-    return boost::shared_ptr<DVRK_Arm>(new DVRK_Arm(arm_name));
+std::shared_ptr<DVRK_Arm> create(std::string arm_name){
+    return std::shared_ptr<DVRK_Arm>(new DVRK_Arm(arm_name));
 }
-void destroy(boost::shared_ptr<DVRK_Arm> arm_obj){
+void destroy(std::shared_ptr<DVRK_Arm> arm_obj){
     arm_obj.reset();
 }
 }
