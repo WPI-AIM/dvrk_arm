@@ -32,7 +32,8 @@
 *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 *  POSSIBILITY OF SUCH DAMAGE.
 *
-* Author: Eitan Marder-Eppstein, Adnan Munawar
+* Author: Eitan Marder-Eppstein
+* Contributor: Adnan Munawar
 *********************************************************************/
 #ifndef TIMING_H
 #define TIMING_H
